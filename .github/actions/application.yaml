@@ -1,0 +1,45 @@
+name: 'API Application'
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  install:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: 'actions/checkout@v3'
+      - uses: 'actions/setup-node@v3'
+        with:
+          node-version: '16'
+          cache: 'npm'
+      - run: 'npm ci'
+  eslint:
+    runs-on: 'ubuntu-latest'
+    needs: ['install']
+    steps:
+      - uses: 'actions/checkout@v3'
+      - uses: 'actions/setup-node@v3'
+        with:
+          node-version: '16'
+          cache: 'npm'
+      - run: 'npm ci'
+      - run: 'npm run lint:js'
+  build:
+    runs-on: 'ubuntu-latest'
+    needs: ['eslint']
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'npm'
+      - run: npm ci
+      - name: Get environment variables
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > .env
+      - run: 'npm run build'
+      - uses: 'actions/cache@v3'
+        with:
+          path: dist
+          key: ${{ runner.os }}-${{ hashFiles('dist') }}
