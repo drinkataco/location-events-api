@@ -1,5 +1,7 @@
-import Fastify, { FastifyServerOptions } from 'fastify';
+import Fastify, { FastifyInstance, FastifyServerOptions } from 'fastify';
+import pino from 'pino';
 
+import apolloInstance from './apollo';
 import { NODE_ENV, SERVER_PORT, SERVER_HOST } from './consts';
 
 export default async () => {
@@ -8,21 +10,20 @@ export default async () => {
   if (NODE_ENV === 'local') {
     // If running locally, let's prettify the logs
     config.logger = {
-      transport: {
-        target: 'pino-pretty',
-        options: {
-          translateTime: 'HH:MM:ss Z',
-          ignore: 'pid,hostname',
-        },
+      prettyPrint: {
+        translateTime: 'HH:MM:ss Z',
+        ignore: 'pid,hostname',
       },
     };
   }
 
-  const fastify = Fastify(config);
+  const fastify: FastifyInstance = Fastify(config);
+  const apollo = await apolloInstance(fastify);
 
-  // Set Routes
-  fastify.get('/', () => ({ foo: 'bar' }));
-
-  // Listen to Port
+  await fastify.register(apollo.createHandler());
   await fastify.listen({ port: SERVER_PORT, host: SERVER_HOST });
+
+  (fastify.log as pino.Logger).info(
+    `Apollo ready at http://${SERVER_HOST}:${SERVER_PORT}${apollo.graphqlPath}`,
+  );
 };
