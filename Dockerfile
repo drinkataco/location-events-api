@@ -9,8 +9,10 @@ RUN npm run build
 
 FROM node:16-alpine
 
-COPY --from=builder /usr/src/app/dist /app
+COPY --from=builder /usr/src/app/dist /srv/app
+COPY --from=builder /usr/src/app/node_modules /srv/node_modules
 
-EXPOSE 80
+# Node Server shouldn't bind to localhost in docker
+ENV SERVER_HOST=0.0.0.0
 
-CMD ["node", "/app/index.js"]
+CMD ["node", "/srv/app/index.js"]

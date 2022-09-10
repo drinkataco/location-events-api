@@ -5,3 +5,8 @@ createServer().catch((err) => {
   console.log('Error Starting Application\n', err);
   process.exit(1);
 });
+
+// Ensure SIGINT exists application
+process.on('SIGINT', () => {
+  process.exit();
+});

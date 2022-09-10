@@ -1,10 +1,8 @@
-// type NodeEnv = 'local' | 'development' | 'production';
-
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
       NODE_ENV: 'local' | 'development' | 'production';
-      PORT: number;
+      SERVER_PORT: number;
     }
   }
 }

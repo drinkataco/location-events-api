@@ -1,6 +1,6 @@
 import Fastify, { FastifyServerOptions } from 'fastify';
 
-import { NODE_ENV, PORT } from './consts';
+import { NODE_ENV, SERVER_PORT, SERVER_HOST } from './consts';
 
 export default async () => {
   const config: FastifyServerOptions = { logger: true };
@@ -24,5 +24,5 @@ export default async () => {
   fastify.get('/', () => ({ foo: 'bar' }));
 
   // Listen to Port
-  await fastify.listen({ port: PORT });
+  await fastify.listen({ port: SERVER_PORT, host: SERVER_HOST });
 };

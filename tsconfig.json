@@ -1,9 +1,7 @@
 {
   "compilerOptions": {
     "lib": ["ES2022"],
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
+    "module": "CommonJS",
     "removeComments": true,
     "preserveConstEnums": true,
     "strict": true,

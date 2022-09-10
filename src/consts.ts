@@ -5,5 +5,6 @@ dotenv.config();
 
 export const NODE_ENV = process.env.NODE_ENV;
 
-// Server Port
-export const PORT = process.env.PORT || 4000;
+// Fastify Server Config (https://www.fastify.io/docs/latest/Reference/Server/)
+export const SERVER_PORT = process.env.SERVER_PORT || 3000;
+export const SERVER_HOST = process.env.SERVER_HOST || '127.0.0.1';
