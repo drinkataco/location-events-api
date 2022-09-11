@@ -6,4 +6,14 @@ export default {
     events: () => exampleData.events,
     locations: () => exampleData.locations,
   },
+  Organisation: {
+    events: () => ([{ id: 'z' }]),
+  },
+  Event: {
+    organisation: () => ({ id: 'x' }),
+    location: () => ({ id: 'y' }),
+  },
+  Location: {
+    events: () => ([{ id: 'z' }]),
+  },
 };

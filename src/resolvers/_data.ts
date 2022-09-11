@@ -31,24 +31,40 @@ export const locations = [
 
 export const events = [
   {
+    id: 1,
+    organisationId: 1,
     title: 'Total Luck',
-    time: new Date(),
-    location: locations[0],
+    time: {
+      start: new Date(),
+      end: new Date(),
+    },
+    // location: locations[0],
   },
   {
+    id: 2,
+    organisationId: 1,
     title: 'Mac Demarco',
-    time: new Date(),
-    location: locations[1],
+    time: {
+      start: new Date(),
+      end: new Date(),
+    },
+    // location: locations[1],
   },
   {
+    id: 3,
+    organisationId: 1,
     title: 'IDLES',
-    time: new Date(),
-    location: locations[2],
+    time: {
+      start: new Date(),
+      end: new Date(),
+    },
+    // location: locations[2],
   },
 ];
 
 export const organisations = [
   {
+    id: 1,
     title: 'The Company',
     events,
   },
