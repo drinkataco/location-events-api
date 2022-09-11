@@ -8,7 +8,7 @@ GraphQL based API that has the abilities to Create, Read, Update, & Delete Locat
 
 `npm run build` - this (you guessed it) builds the typescript graphql application
 
-`npm run watch` - build on each file change. Useful for development.
+`npm run dev` - run, and build on each file change. Useful for development.
 
 ## CI/CD
 

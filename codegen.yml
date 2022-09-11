@@ -1,0 +1,12 @@
+overwrite: true
+schema:
+  - './src/resolvers/types.ts'
+documents: null
+generates:
+  src/generated/graphql.ts:
+    plugins:
+      - 'typescript'
+      - 'typescript-resolvers'
+    config:
+      scalars:
+        Date: 'Date'

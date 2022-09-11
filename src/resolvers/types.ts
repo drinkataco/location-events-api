@@ -9,6 +9,7 @@ export default gql`
   }
 
   type Location {
+    id: ID!
     addressLine1: String!
     addressLine2: String
     city: String!
@@ -21,10 +22,11 @@ export default gql`
   type Event {
     id: ID!
     organisationId: ID
-    organisation: Organisation
+    locationId: ID
     title: String!
     time: Schedule
     location: Location
+    organisation: Organisation
   }
 
   type Organisation {
