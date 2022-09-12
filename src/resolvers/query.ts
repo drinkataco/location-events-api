@@ -28,7 +28,7 @@ export default {
   },
   Location: {
     events: (location: Location) => exampleData.events.filter(
-      (event: Event) => event.organisationId === location.id,
+      (event: Event) => event.locationId === location.id,
     ),
   },
 };
