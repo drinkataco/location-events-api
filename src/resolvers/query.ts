@@ -15,20 +15,20 @@ export default {
   //
   Organisation: {
     events: (organisation: Organisation) => exampleData.events.filter(
-      (event: Event) => event.organisationId === organisation.id,
+      (event: Event) => event.organisation_id === organisation._id,
     ),
   },
   Event: {
     organisation: (event: Event) => exampleData.organisations.find(
-      (organisation: Organisation) => organisation.id === event.organisationId,
+      (organisation: Organisation) => organisation._id === event.organisation_id,
     ),
     location: (event: Event) => exampleData.locations.find(
-      (location: Location) => location.id === event.locationId,
+      (location: Location) => location._id === event.location_id,
     ),
   },
   Location: {
     events: (location: Location) => exampleData.events.filter(
-      (event: Event) => event.locationId === location.id,
+      (event: Event) => event.location_id === location._id,
     ),
   },
 };

@@ -4,7 +4,7 @@
 
 export const locations = [
   {
-    id: '1',
+    _id: '1',
     addressLine1: 'The Hare & Hounds',
     addressLine2: 'High Street, Kings Heath',
     city: 'Birmingham',
@@ -13,7 +13,7 @@ export const locations = [
     country: 'GB',
   },
   {
-    id: '2',
+    _id: '2',
     addressLine1: 'The Mill',
     addressLine2: '29 Lower Trinity St, Deritent',
     city: 'Birmingham',
@@ -22,7 +22,7 @@ export const locations = [
     country: 'GB',
   },
   {
-    id: '3',
+    _id: '3',
     addressLine1: 'The Crossing',
     addressLine2: '1 Milk Street, Deritent',
     city: 'Birmingham',
@@ -34,9 +34,9 @@ export const locations = [
 
 export const events = [
   {
-    id: '1',
-    organisationId: '1',
-    locationId: '3',
+    _id: '1',
+    organisation_id: '1',
+    location_id: '3',
     title: 'Total Luck',
     time: {
       start: new Date(),
@@ -44,9 +44,9 @@ export const events = [
     },
   },
   {
-    id: '2',
-    organisationId: '1',
-    locationId: '2',
+    _id: '2',
+    organisation_id: '1',
+    location_id: '2',
     title: 'Mac Demarco',
     time: {
       start: new Date(),
@@ -54,9 +54,9 @@ export const events = [
     },
   },
   {
-    id: '3',
-    organisationId: '1',
-    locationId: '1',
+    _id: '3',
+    organisation_id: '1',
+    location_id: '1',
     title: 'IDLES',
     time: {
       start: new Date(),
@@ -67,7 +67,7 @@ export const events = [
 
 export const organisations = [
   {
-    id: '1',
+    _id: '1',
     title: 'The Company',
     events,
   },

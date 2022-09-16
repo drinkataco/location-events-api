@@ -11,5 +11,10 @@
     "project": "./tsconfig.json"
   },
   "plugins": ["@typescript-eslint"],
+  "rules": {
+    "implicit-arrow-linebreak": "off",
+    "no-underscore-dangle": "off",
+    "operator-linebreak": "off"
+  },
   "ignorePatterns": ["dist/", "node_modules/", "src/generated/"]
 }
