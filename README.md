@@ -8,7 +8,17 @@ GraphQL based API that has the abilities to Create, Read, Update, & Delete Locat
 
 `npm run build` - this (you guessed it) builds the typescript graphql application
 
-`npm run dev` - run, and build on each file change. Useful for development.
+
+### Development
+
+`npm run dev` - run, and build on each file change. Although, before doing this you may want to run:
+
+- `docker compose up` - run a mongo database on your machine to be used for development. This includes mongo express, a simple GUI to view your database at port 8081
+- `npm run db:seed` - place testable data in the database. Default 200 events, change by passing a value such as `-- 500`.
+
+### Env file
+
+Before build or development you must create a `.env` file. You can copy the `.env.example` file for development purposes.
 
 ## CI/CD
 
