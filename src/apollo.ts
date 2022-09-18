@@ -7,8 +7,7 @@ import { ApolloServerPlugin } from 'apollo-server-plugin-base';
 import { FastifyInstance } from 'fastify';
 
 import { NODE_ENV } from './consts';
-import typeDefs from './resolvers/types';
-import resolvers from './resolvers/query';
+import { dataSources, resolvers, typeDefs } from './graphql';
 
 /**
  * Plugin to handle graceful closing of webserver
@@ -45,6 +44,7 @@ export default async (fastify: FastifyInstance): Promise<ApolloServer> => {
   }
 
   const apollo = new ApolloServer({
+    dataSources,
     typeDefs,
     resolvers,
     csrfPrevention: true,

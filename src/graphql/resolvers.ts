@@ -1,4 +1,5 @@
 import * as exampleData from './_data';
+// import MyContext from './context';
 import { Event, Location, Organisation } from '../generated/graphql';
 
 export default {
@@ -7,7 +8,8 @@ export default {
   //
   Query: {
     organisations: () => exampleData.organisations,
-    events: () => exampleData.events,
+    // events: (_: never, __: never, ctx: Context): Event[] => exampleData.events,
+    events: (): Event[] => exampleData.events,
     locations: () => exampleData.locations,
   },
   //
