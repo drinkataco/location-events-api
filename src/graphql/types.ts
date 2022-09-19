@@ -8,14 +8,20 @@ export default gql`
     end: Date
   }
 
-  type Location {
-    _id: ID!
-    addressLine1: String!
-    addressLine2: String
+  type Address {
+    line1: String!
+    line2: String
     city: String!
     region: String
     postCode: String!
     country: String!
+  }
+
+  type Location {
+    _id: ID!
+    address: Address
+    latitude: Int
+    longitude: Int
     events: [Event]
   }
 

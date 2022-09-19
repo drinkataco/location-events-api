@@ -68,11 +68,15 @@ const createOrganisation = (): Organisation => {
  */
 const createLocation = (): Location => {
   const location = new LocationModel({
-    addressLine1: faker.address.streetAddress(),
-    city: faker.address.city(),
-    region: faker.address.state(),
-    postCode: faker.address.zipCode(),
-    country: faker.address.countryCode(),
+    address: {
+      line1: faker.address.streetAddress(),
+      city: faker.address.city(),
+      region: faker.address.state(),
+      postCode: faker.address.zipCode(),
+      country: faker.address.countryCode(),
+    },
+    latitude: faker.address.latitude(),
+    longitude: faker.address.longitude(),
   });
 
   location.save();

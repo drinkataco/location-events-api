@@ -15,6 +15,16 @@ export type Scalars = {
   Date: Date;
 };
 
+export type Address = {
+  __typename?: 'Address';
+  city: Scalars['String'];
+  country: Scalars['String'];
+  line1: Scalars['String'];
+  line2?: Maybe<Scalars['String']>;
+  postCode: Scalars['String'];
+  region?: Maybe<Scalars['String']>;
+};
+
 export type Event = {
   __typename?: 'Event';
   _id: Scalars['ID'];
@@ -28,13 +38,10 @@ export type Event = {
 export type Location = {
   __typename?: 'Location';
   _id: Scalars['ID'];
-  addressLine1: Scalars['String'];
-  addressLine2?: Maybe<Scalars['String']>;
-  city: Scalars['String'];
-  country: Scalars['String'];
+  address?: Maybe<Address>;
   events?: Maybe<Array<Maybe<Event>>>;
-  postCode: Scalars['String'];
-  region?: Maybe<Scalars['String']>;
+  latitude?: Maybe<Scalars['Int']>;
+  longitude?: Maybe<Scalars['Int']>;
 };
 
 export type Organisation = {
@@ -129,10 +136,12 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
+  Address: ResolverTypeWrapper<Address>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Date: ResolverTypeWrapper<Scalars['Date']>;
   Event: ResolverTypeWrapper<Event>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
   Location: ResolverTypeWrapper<Location>;
   Organisation: ResolverTypeWrapper<Organisation>;
   Query: ResolverTypeWrapper<{}>;
@@ -142,15 +151,27 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
+  Address: Address;
   Boolean: Scalars['Boolean'];
   Date: Scalars['Date'];
   Event: Event;
   ID: Scalars['ID'];
+  Int: Scalars['Int'];
   Location: Location;
   Organisation: Organisation;
   Query: {};
   Schedule: Schedule;
   String: Scalars['String'];
+};
+
+export type AddressResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Address'] = ResolversParentTypes['Address']> = {
+  city?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  country?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  line1?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  line2?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  postCode?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  region?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
@@ -169,13 +190,10 @@ export type EventResolvers<ContextType = MyContext, ParentType extends Resolvers
 
 export type LocationResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Location'] = ResolversParentTypes['Location']> = {
   _id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  addressLine1?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  addressLine2?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  city?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  country?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  address?: Resolver<Maybe<ResolversTypes['Address']>, ParentType, ContextType>;
   events?: Resolver<Maybe<Array<Maybe<ResolversTypes['Event']>>>, ParentType, ContextType>;
-  postCode?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  region?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  latitude?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  longitude?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -202,6 +220,7 @@ export type ScheduleResolvers<ContextType = MyContext, ParentType extends Resolv
 };
 
 export type Resolvers<ContextType = MyContext> = {
+  Address?: AddressResolvers<ContextType>;
   Date?: GraphQLScalarType;
   Event?: EventResolvers<ContextType>;
   Location?: LocationResolvers<ContextType>;
