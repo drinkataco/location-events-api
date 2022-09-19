@@ -1,5 +1,4 @@
 import { MongoDataSource } from 'apollo-datasource-mongodb';
-import { Event as EventModel } from '../../db/schemas';
 
 import { Event } from '../../generated/graphql';
 
