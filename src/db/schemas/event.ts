@@ -8,13 +8,13 @@ const eventSchema = new Schema<Event>({
     start: { type: Date, required: true },
     end: Date,
   },
-  organisation_id: {
+  organisation: {
     type: Schema.Types.ObjectId,
     ref: 'Organisation',
     index: true,
     required: true,
   },
-  location_id: {
+  location: {
     type: Schema.Types.ObjectId,
     ref: 'Location',
     index: true,

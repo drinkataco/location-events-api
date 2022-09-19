@@ -24,9 +24,9 @@ export default {
   },
   Event: {
     organisation: (event: Event, _: never, ctx: MyContext) =>
-      ctx.dataSources.organisations.findOneById(event.organisation_id),
+      ctx.dataSources.organisations.findOneById(event.organisation),
     location: (event: Event, _: never, ctx: MyContext) =>
-      ctx.dataSources.locations.findOneById(event.location_id),
+      ctx.dataSources.locations.findOneById(event.location),
   },
   Location: {
     events: (location: Location, _: never, ctx: MyContext) =>

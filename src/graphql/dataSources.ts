@@ -6,8 +6,15 @@ import * as Models from '../db/schemas';
 
 // These apollo datasources will have effectively the same pattern
 class MyDataSource<T> extends MongoDataSource<T> {
-  findAll() {
+  public findAll() {
     return this.findByFields({});
+  }
+
+  /**
+   * This allows us to grab ObjectIds from GraphQL types
+   */
+  public findOneById(id: unknown) {
+    return super.findOneById(id as string);
   }
 }
 

@@ -112,8 +112,8 @@ const createEvent = async (
       start,
       end,
     },
-    location_id: eventLoc,
-    organisation_id: eventOrg,
+    location: eventLoc,
+    organisation: eventOrg,
   });
 
   await event.save();
