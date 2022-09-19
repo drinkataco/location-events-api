@@ -21,12 +21,11 @@ export default gql`
 
   type Event {
     _id: ID!
-    organisation_id: ID!
     location_id: ID
     title: String!
     time: Schedule
-    location: Location
-    organisation: Organisation
+    location: Location!
+    organisation: Organisation!
   }
 
   type Organisation {

@@ -21,7 +21,6 @@ export type Event = {
   location?: Maybe<Location>;
   location_id?: Maybe<Scalars['ID']>;
   organisation?: Maybe<Organisation>;
-  organisation_id: Scalars['ID'];
   time?: Maybe<Schedule>;
   title: Scalars['String'];
 };
@@ -160,7 +159,6 @@ export type EventResolvers<ContextType = MyContext, ParentType extends Resolvers
   location?: Resolver<Maybe<ResolversTypes['Location']>, ParentType, ContextType>;
   location_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   organisation?: Resolver<Maybe<ResolversTypes['Organisation']>, ParentType, ContextType>;
-  organisation_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   time?: Resolver<Maybe<ResolversTypes['Schedule']>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
