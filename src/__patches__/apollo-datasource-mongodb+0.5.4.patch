@@ -1,0 +1,12 @@
+diff --git a/node_modules/apollo-datasource-mongodb/index.d.ts b/node_modules/apollo-datasource-mongodb/index.d.ts
+index f06b4dd..6c31e07 100644
+--- a/node_modules/apollo-datasource-mongodb/index.d.ts
+@@ -39,7 +40,7 @@ declare module 'apollo-datasource-mongodb' {
+     protected collection: Collection<TData>
+     protected model: Model<TData>
+ 
+-    constructor(modelOrCollection: ModelOrCollection<TData>)
++    constructor(modelOrCollection: MongooseModel<TData>)
+ 
+     findOneById(
+       id: ObjectId | string,
