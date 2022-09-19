@@ -7,12 +7,11 @@ export default {
   //
   Query: {
     organisations: (_: never, __: never, ctx: MyContext) =>
-      ctx.dataSources.organisations.getOrganisations(),
-    // events: (_: never, __: never, ctx: Context): Event[] => exampleData.events,
+      ctx.dataSources.organisations.findAll(),
     events: (_: never, __: never, ctx: MyContext) =>
-      ctx.dataSources.events.getEvents(),
+      ctx.dataSources.events.findAll(),
     locations: (_: never, __: never, ctx: MyContext) =>
-      ctx.dataSources.locations.getLocations(),
+      ctx.dataSources.locations.findAll(),
   },
   //
   // Inverse Lookups
