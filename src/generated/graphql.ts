@@ -28,11 +28,11 @@ export type Address = {
 export type Event = {
   __typename?: 'Event';
   _id: Scalars['ID'];
+  description?: Maybe<Scalars['String']>;
   location: Location;
-  location_id?: Maybe<Scalars['ID']>;
+  name: Scalars['String'];
   organisation: Organisation;
   time?: Maybe<Schedule>;
-  title: Scalars['String'];
 };
 
 export type Location = {
@@ -180,11 +180,11 @@ export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 
 export type EventResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Event'] = ResolversParentTypes['Event']> = {
   _id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   location?: Resolver<ResolversTypes['Location'], ParentType, ContextType>;
-  location_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   organisation?: Resolver<ResolversTypes['Organisation'], ParentType, ContextType>;
   time?: Resolver<Maybe<ResolversTypes['Schedule']>, ParentType, ContextType>;
-  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

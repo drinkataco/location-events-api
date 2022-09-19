@@ -100,7 +100,7 @@ const createEvent = async (
   const eventOrg = organisation || createOrganisation();
   const eventLoc = location || createLocation();
 
-  const title = randomTitle();
+  const name = randomTitle();
   const dates = faker.date.betweens(
     '2020-01-01T00:00:00.000Z',
     '2020-12-01T00:00:00.000Z',
@@ -111,7 +111,8 @@ const createEvent = async (
   const end = randomInt(0, 2) % 2 ? dates.pop() : undefined;
 
   const event = new EventModel({
-    title,
+    name,
+    description: faker.lorem.paragraphs(1),
     time: {
       start,
       end,

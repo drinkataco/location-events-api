@@ -9,7 +9,6 @@ const orgSchema = new Schema<Organisation>(
       type: Schema.Types.ObjectId,
       ref: 'Location',
       index: true,
-      required: true,
     },
   },
   { timestamps: true },
