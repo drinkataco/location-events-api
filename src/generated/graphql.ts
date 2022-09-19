@@ -19,7 +19,7 @@ export type Event = {
   __typename?: 'Event';
   _id: Scalars['ID'];
   location?: Maybe<Location>;
-  location_id: Scalars['ID'];
+  location_id?: Maybe<Scalars['ID']>;
   organisation?: Maybe<Organisation>;
   organisation_id: Scalars['ID'];
   time?: Maybe<Schedule>;
@@ -158,7 +158,7 @@ export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 export type EventResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Event'] = ResolversParentTypes['Event']> = {
   _id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   location?: Resolver<Maybe<ResolversTypes['Location']>, ParentType, ContextType>;
-  location_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  location_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   organisation?: Resolver<Maybe<ResolversTypes['Organisation']>, ParentType, ContextType>;
   organisation_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   time?: Resolver<Maybe<ResolversTypes['Schedule']>, ParentType, ContextType>;
