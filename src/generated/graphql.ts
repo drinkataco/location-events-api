@@ -1,3 +1,4 @@
+import MyContext from '../graphql/context';
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -18,9 +19,9 @@ export type Event = {
   __typename?: 'Event';
   _id: Scalars['ID'];
   location?: Maybe<Location>;
-  location_id?: Maybe<Scalars['ID']>;
+  location_id: Scalars['ID'];
   organisation?: Maybe<Organisation>;
-  organisation_id?: Maybe<Scalars['ID']>;
+  organisation_id: Scalars['ID'];
   time?: Maybe<Schedule>;
   title: Scalars['String'];
 };
@@ -154,18 +155,18 @@ export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
   name: 'Date';
 }
 
-export type EventResolvers<ContextType = any, ParentType extends ResolversParentTypes['Event'] = ResolversParentTypes['Event']> = {
+export type EventResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Event'] = ResolversParentTypes['Event']> = {
   _id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   location?: Resolver<Maybe<ResolversTypes['Location']>, ParentType, ContextType>;
-  location_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  location_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   organisation?: Resolver<Maybe<ResolversTypes['Organisation']>, ParentType, ContextType>;
-  organisation_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  organisation_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   time?: Resolver<Maybe<ResolversTypes['Schedule']>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type LocationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Location'] = ResolversParentTypes['Location']> = {
+export type LocationResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Location'] = ResolversParentTypes['Location']> = {
   _id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   addressLine1?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   addressLine2?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -177,26 +178,26 @@ export type LocationResolvers<ContextType = any, ParentType extends ResolversPar
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type OrganisationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Organisation'] = ResolversParentTypes['Organisation']> = {
+export type OrganisationResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Organisation'] = ResolversParentTypes['Organisation']> = {
   _id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   events?: Resolver<Maybe<Array<Maybe<ResolversTypes['Event']>>>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+export type QueryResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   events?: Resolver<Maybe<Array<Maybe<ResolversTypes['Event']>>>, ParentType, ContextType>;
   locations?: Resolver<Maybe<Array<Maybe<ResolversTypes['Location']>>>, ParentType, ContextType>;
   organisations?: Resolver<Maybe<Array<Maybe<ResolversTypes['Organisation']>>>, ParentType, ContextType>;
 };
 
-export type ScheduleResolvers<ContextType = any, ParentType extends ResolversParentTypes['Schedule'] = ResolversParentTypes['Schedule']> = {
+export type ScheduleResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Schedule'] = ResolversParentTypes['Schedule']> = {
   end?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   start?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type Resolvers<ContextType = any> = {
+export type Resolvers<ContextType = MyContext> = {
   Date?: GraphQLScalarType;
   Event?: EventResolvers<ContextType>;
   Location?: LocationResolvers<ContextType>;

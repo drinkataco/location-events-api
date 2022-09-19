@@ -5,8 +5,11 @@ documents: null
 generates:
   src/generated/graphql.ts:
     plugins:
+      - add:
+          content: "import MyContext from '../graphql/context';"
       - 'typescript'
       - 'typescript-resolvers'
     config:
       scalars:
         Date: 'Date'
+      contextType: 'MyContext'
