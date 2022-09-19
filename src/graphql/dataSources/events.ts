@@ -10,4 +10,8 @@ export default class Events extends MongoDataSource<Event> {
   public getEventById(id: string): Promise<Event | null | undefined> {
     return this.findOneById(id);
   }
+
+  public findOneById(id: unknown) {
+    return super.findOneById(id as string);
+  }
 }

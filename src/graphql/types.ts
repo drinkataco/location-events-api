@@ -21,8 +21,8 @@ export default gql`
 
   type Event {
     _id: ID!
-    organisation_id: ID
-    location_id: ID
+    organisation_id: ID!
+    location_id: ID!
     title: String!
     time: Schedule
     location: Location

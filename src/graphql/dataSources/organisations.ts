@@ -1,15 +1,13 @@
-// import { MongoDataSource } from 'apollo-datasource-mongodb';
+import { MongoDataSource } from 'apollo-datasource-mongodb';
 
-// export default class Organisations extends MongoDataSource {
-  // async getOrganisations() {
-    // return await this.model.find();
-  // }
+import { Organisation } from '../../generated/graphql';
 
-  // // async getEvent(id) {
-    // // return await this.findOneById(id);
-  // // }
+export default class Organisations extends MongoDataSource<Organisation> {
+  public getOrganisations(): Promise<(Organisation | null | undefined)[]> {
+    return this.findByFields({});
+  }
 
-  // // async createEvent({ title, rating, year }) {
-    // // return await this.model.create({ title, rating, year });
-  // // }
-// }
+  public getOrganisationById(id: string): Promise<Organisation | null | undefined> {
+    return this.findOneById(id);
+  }
+}

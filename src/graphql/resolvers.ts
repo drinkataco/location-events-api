@@ -1,5 +1,4 @@
-import * as exampleData from './_data';
-// import MyContext from './context';
+import MyContext from './context';
 import { Event, Location, Organisation } from '../generated/graphql';
 
 export default {
@@ -7,30 +6,33 @@ export default {
   // Standard Queries
   //
   Query: {
-    organisations: () => exampleData.organisations,
+    organisations: (_: never, __: never, ctx: MyContext) =>
+      ctx.dataSources.organisations.getOrganisations(),
     // events: (_: never, __: never, ctx: Context): Event[] => exampleData.events,
-    events: (): Event[] => exampleData.events,
-    locations: () => exampleData.locations,
+    events: (_: never, __: never, ctx: MyContext) =>
+      ctx.dataSources.events.getEvents(),
+    locations: (_: never, __: never, ctx: MyContext) =>
+      ctx.dataSources.locations.getLocations(),
   },
   //
   // Inverse Lookups
   //
   Organisation: {
-    events: (organisation: Organisation) => exampleData.events.filter(
-      (event: Event) => event.organisation_id === organisation._id,
-    ),
+    events: (organisation: Organisation, _: never, ctx: MyContext) =>
+      ctx.dataSources.events.findByFields({
+        organisation_id: organisation._id,
+      }),
   },
   Event: {
-    organisation: (event: Event) => exampleData.organisations.find(
-      (organisation: Organisation) => organisation._id === event.organisation_id,
-    ),
-    location: (event: Event) => exampleData.locations.find(
-      (location: Location) => location._id === event.location_id,
-    ),
+    organisation: (event: Event, _: never, ctx: MyContext) =>
+      ctx.dataSources.organisations.findOneById(event.organisation_id),
+    location: (event: Event, _: never, ctx: MyContext) =>
+      ctx.dataSources.locations.findOneById(event.location_id),
   },
   Location: {
-    events: (location: Location) => exampleData.events.filter(
-      (event: Event) => event.location_id === location._id,
-    ),
+    events: (location: Location, _: never, ctx: MyContext) =>
+      ctx.dataSources.events.findByFields({
+        location_id: location._id,
+      }),
   },
 };

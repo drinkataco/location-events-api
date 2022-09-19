@@ -1,7 +1,11 @@
 import type Events from './dataSources/events';
+import type Locations from './dataSources/locations';
+import type Organisations from './dataSources/organisations';
 
-export interface Context {
+export default interface MyContext {
   dataSources: {
-    event: Events
+    events: Events
+    locations: Locations
+    organisations: Organisations
   }
 }

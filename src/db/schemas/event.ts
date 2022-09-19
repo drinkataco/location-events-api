@@ -8,8 +8,18 @@ const eventSchema = new Schema<Event>({
     start: { type: Date, required: true },
     end: Date,
   },
-  organisation_id: { type: Schema.Types.ObjectId, ref: 'Organisation' },
-  location_id: { type: Schema.Types.ObjectId, ref: 'Location' },
+  organisation_id: {
+    type: Schema.Types.ObjectId,
+    ref: 'Organisation',
+    index: true,
+    required: true,
+  },
+  location_id: {
+    type: Schema.Types.ObjectId,
+    ref: 'Location',
+    index: true,
+    required: true,
+  },
 });
 
 export default model<Event>('Event', eventSchema);
