@@ -30,7 +30,10 @@ export default gql`
 
   type Organisation {
     _id: ID!
-    title: String!
+    name: String!
+    createdAt: Date!
+    updatedAt: Date!
+    location: Location
     events: [Event]
   }
 

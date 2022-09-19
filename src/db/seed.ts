@@ -52,7 +52,7 @@ logger.info(`Starting Database Seed - Creating ${EVENTS} events`);
  */
 const createOrganisation = (): Organisation => {
   const organisation = new OrganisationModel({
-    title: randomTitle(),
+    name: randomTitle(),
   });
 
   organisation.save();

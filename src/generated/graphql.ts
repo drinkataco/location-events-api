@@ -18,9 +18,9 @@ export type Scalars = {
 export type Event = {
   __typename?: 'Event';
   _id: Scalars['ID'];
-  location?: Maybe<Location>;
+  location: Location;
   location_id?: Maybe<Scalars['ID']>;
-  organisation?: Maybe<Organisation>;
+  organisation: Organisation;
   time?: Maybe<Schedule>;
   title: Scalars['String'];
 };
@@ -40,8 +40,11 @@ export type Location = {
 export type Organisation = {
   __typename?: 'Organisation';
   _id: Scalars['ID'];
+  createdAt: Scalars['Date'];
   events?: Maybe<Array<Maybe<Event>>>;
-  title: Scalars['String'];
+  location?: Maybe<Location>;
+  name: Scalars['String'];
+  updatedAt: Scalars['Date'];
 };
 
 export type Query = {
@@ -156,9 +159,9 @@ export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 
 export type EventResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Event'] = ResolversParentTypes['Event']> = {
   _id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  location?: Resolver<Maybe<ResolversTypes['Location']>, ParentType, ContextType>;
+  location?: Resolver<ResolversTypes['Location'], ParentType, ContextType>;
   location_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  organisation?: Resolver<Maybe<ResolversTypes['Organisation']>, ParentType, ContextType>;
+  organisation?: Resolver<ResolversTypes['Organisation'], ParentType, ContextType>;
   time?: Resolver<Maybe<ResolversTypes['Schedule']>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -178,8 +181,11 @@ export type LocationResolvers<ContextType = MyContext, ParentType extends Resolv
 
 export type OrganisationResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Organisation'] = ResolversParentTypes['Organisation']> = {
   _id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   events?: Resolver<Maybe<Array<Maybe<ResolversTypes['Event']>>>, ParentType, ContextType>;
-  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  location?: Resolver<Maybe<ResolversTypes['Location']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
