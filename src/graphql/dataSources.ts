@@ -2,7 +2,7 @@
 import { MongoDataSource } from 'apollo-datasource-mongodb';
 
 import type { Event, Location, Organisation } from '../generated/graphql';
-import * as Models from '../db/schemas';
+import * as Models from '../db/models';
 
 // These apollo datasources will have effectively the same pattern
 class MyDataSource<T> extends MongoDataSource<T> {

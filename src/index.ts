@@ -1,4 +1,4 @@
-import dbConnect from './db';
+import dbConnect from './db/connect';
 import loggerInstance from './logger';
 import createServer from './server';
 

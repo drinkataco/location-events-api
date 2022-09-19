@@ -11,12 +11,12 @@
  */
 import { faker } from '@faker-js/faker';
 
-import dbConnect from '.';
+import dbConnect from './connect';
 import {
   Event as EventModel,
   Location as LocationModel,
   Organisation as OrganisationModel,
-} from './schemas';
+} from './models';
 import loggerInstance from '../logger';
 import { Location, Event, Organisation } from '../generated/graphql';
 
