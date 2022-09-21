@@ -60,21 +60,30 @@ const randomTitle = (): string =>
     .join(' ');
 
 /**
- * Create Organisation documents in Mongo
+ * Generic based function that allows us to determine whether to reuse or create a new document
+ *  of given type
  *
- * @returns The Organisation Object
+ * @param list - a list of said documents, to not only use but push on to
+ * @param func - a creation function of type. If we have determined not to reuse an object
+ *  then we'll create one with this function
+ * @param probability - the probability of reuse. Default 0.5 (50%)
+ *
+ * @returns a document
  */
-const createOrganisation = () => {
-  const name = randomTitle();
-  const organisation = new OrganisationModel({
-    name,
-  });
+const getDocument = <T>(
+  list: Array<T>,
+  func: () => T,
+  probability = 0.7,
+): T => {
+  const create = !list.length || Math.random() <= probability;
 
-  logger.debug(`Creating Organisation '${name}'`);
+  if (create) {
+    const n = func();
+    list.push(n);
+    return n;
+  }
 
-  promises.push(organisation.save());
-
-  return organisation;
+  return list[Math.floor(Math.random() * list.length)] as T;
 };
 
 /**
@@ -101,6 +110,26 @@ const createLocation = () => {
   promises.push(location.save());
 
   return location;
+};
+
+/**
+ * Create Organisation documents in Mongo
+ *
+ * @returns The Organisation Object
+ */
+const createOrganisation = () => {
+  const location = getDocument<Location>(locations, createLocation);
+  const name = randomTitle();
+  const organisation = new OrganisationModel({
+    name,
+    location,
+  });
+
+  logger.debug(`Creating Organisation '${name}'`);
+
+  promises.push(organisation.save());
+
+  return organisation;
 };
 
 /**
@@ -140,39 +169,12 @@ const createEvent = (location: Location, organisation: Organisation) => {
   return event;
 };
 
-/**
- * Generic based function that allows us to determine whether to reuse or create a new document
- *  of given type
- *
- * @param list - a list of said documents, to not only use but push on to
- * @param func - a creation function of type. If we have determined not to reuse an object
- *  then we'll create one with this function
- * @param probability - the probability of reuse. Default 0.5 (50%)
- *
- * @returns a document
- */
-const getDocument = <T>(
-  list: Array<T>,
-  func: () => T,
-  probability = 0.7,
-): T => {
-  const create = !list.length || Math.random() <= probability;
-
-  if (create) {
-    const n = func();
-    list.push(n);
-    return n;
-  }
-
-  return list[Math.floor(Math.random() * list.length)] as T;
-};
-
 /*
  * Create documents for use. Each will also create a promise to be resolved.
  */
 Array.from(Array(DOCUMENTS)).forEach(() => {
   const org = getDocument<Organisation>(organisations, createOrganisation);
-  const loc = getDocument<Location>(locations, createLocation);
+  const loc = getDocument<Location>(locations, createLocation, 0.2);
 
   createEvent(loc, org);
 });
