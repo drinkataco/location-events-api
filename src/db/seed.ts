@@ -1,7 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable @typescript-eslint/no-floating-promises */
 /*
- * This Script is a helper for seeding the database with Events, Organisations, and Locations
+ * This asynchronous script is a helper for seeding the database with documents
  *
  * Use the command `npm run db:seed` to run.
  *
@@ -11,52 +10,69 @@
  */
 import { faker } from '@faker-js/faker';
 
-import dbConnect from './connect';
+import * as db from './connect';
+import loggerInstance from '../logger';
 import {
   Event as EventModel,
   Location as LocationModel,
   Organisation as OrganisationModel,
 } from './models';
-import loggerInstance from '../logger';
-import { Location, Event, Organisation } from '../generated/graphql';
+import { Location, Organisation } from '../generated/graphql';
 
-// Initialise Logger
+/* Amount of BASE documents to create. Our BASE document object is the EVENT object */
+const DOCUMENTS = Number(process.argv[2] || 200);
+
+/* create a logger instance for our logging pleasure */
 const logger = loggerInstance();
 
-// Create Mongo DB Connection
-dbConnect(logger).catch((err) => {
-  logger.error(err, 'Error Connecting to Database');
-  process.exit(1);
-});
+/*
+ * Arrays for orgs and locations.
+ * This is so that some objects can be reused, so that we can better reflect a database
+ */
+const organisations: Array<Organisation> = [];
+const locations: Array<Location> = [];
 
-// Randomiser Number Function
+/*
+ * All promises for creating all documents are processed asynchronously.
+ * This array allows us to properly await for resolution at the end to correctly report
+ */
+const promises: Promise<unknown>[] = [];
+
+/**
+ * Create a random integer between the min and max values
+ *
+ * @param min - minimum bound
+ * @param max - maximum bound
+ *
+ * @returns the random integer
+ */
 const randomInt = (min: number, max: number): number =>
   Math.floor(Math.random() * (max - min) + min);
 
-// Random
+/**
+ * Create a random title, between one and four nouns
+ *
+ * @returns the random integer
+ */
 const randomTitle = (): string =>
   Array.from(Array(randomInt(1, 4)))
     .map(() => faker.word.noun())
     .join(' ');
-
-const EVENTS = Number(process.argv[2] || 200);
-const locations: Array<Location> = [];
-const organisations: Array<Organisation> = [];
-
-logger.info(`Starting Database Seed - Creating ${EVENTS} events`);
 
 /**
  * Create Organisation documents in Mongo
  *
  * @returns The Organisation Object
  */
-const createOrganisation = (): Organisation => {
+const createOrganisation = () => {
+  const name = randomTitle();
   const organisation = new OrganisationModel({
-    name: randomTitle(),
+    name,
   });
 
-  organisation.save();
-  organisations.push(organisation);
+  logger.debug(`Creating Organisation '${name}'`);
+
+  promises.push(organisation.save());
 
   return organisation;
 };
@@ -66,11 +82,12 @@ const createOrganisation = (): Organisation => {
  *
  * @returns The Location Object
  */
-const createLocation = (): Location => {
+const createLocation = () => {
+  const city = faker.address.city();
   const location = new LocationModel({
     address: {
       line1: faker.address.streetAddress(),
-      city: faker.address.city(),
+      city,
       region: faker.address.state(),
       postCode: faker.address.zipCode(),
       country: faker.address.countryCode(),
@@ -79,8 +96,9 @@ const createLocation = (): Location => {
     longitude: faker.address.longitude(),
   });
 
-  location.save();
-  locations.push(location);
+  logger.debug(`Creating Location '${city}'`);
+
+  promises.push(location.save());
 
   return location;
 };
@@ -93,13 +111,7 @@ const createLocation = (): Location => {
  *
  * @returns the created event
  */
-const createEvent = async (
-  organisation?: Organisation,
-  location?: Location,
-): Promise<Event> => {
-  const eventOrg = organisation || createOrganisation();
-  const eventLoc = location || createLocation();
-
+const createEvent = (location: Location, organisation: Organisation) => {
   const name = randomTitle();
   const dates = faker.date.betweens(
     '2020-01-01T00:00:00.000Z',
@@ -117,45 +129,69 @@ const createEvent = async (
       start,
       end,
     },
-    location: eventLoc,
-    organisation: eventOrg,
+    location,
+    organisation,
   });
 
-  await event.save();
+  logger.debug(`Creating Event '${name}'`);
+
+  promises.push(event.save());
 
   return event;
 };
 
 /**
- * Create all events, and 30% of the time reuse locations and organisations
+ * Generic based function that allows us to determine whether to reuse or create a new document
+ *  of given type
+ *
+ * @param list - a list of said documents, to not only use but push on to
+ * @param func - a creation function of type. If we have determined not to reuse an object
+ *  then we'll create one with this function
+ * @param probability - the probability of reuse. Default 0.5 (50%)
+ *
+ * @returns a document
  */
-const events = Array.from(Array(EVENTS)).map(async () => {
-  // We should reuse orgs and locations to attach to the Event sometimes
-  const createOrg = Math.random() < 0.3;
-  const createLoc = Math.random() < 0.3;
-  let location!: Location;
-  let organisation!: Organisation;
+const getDocument = <T>(
+  list: Array<T>,
+  func: () => T,
+  probability = 0.7,
+): T => {
+  const create = !list.length || Math.random() <= probability;
 
-  if (!createOrg && !!organisations.length) {
-    organisation = organisations[
-      Math.floor(Math.random() * organisations.length)
-    ] as Organisation;
+  if (create) {
+    const n = func();
+    list.push(n);
+    return n;
   }
 
-  if (!createLoc && !!locations.length) {
-    location = locations[
-      Math.floor(Math.random() * organisations.length)
-    ] as Location;
-  }
+  return list[Math.floor(Math.random() * list.length)] as T;
+};
 
-  await createEvent(organisation, location);
+/*
+ * Create documents for use. Each will also create a promise to be resolved.
+ */
+Array.from(Array(DOCUMENTS)).forEach(() => {
+  const org = getDocument<Organisation>(organisations, createOrganisation);
+  const loc = getDocument<Location>(locations, createLocation);
+
+  createEvent(loc, org);
 });
 
-Promise.all(events)
-  .then(() => {
-    logger.info('Seeding Completed');
+/*
+ * Speedy - connect to the db, and create ALL documents in unison
+ */
+Promise.all([db.connect(logger), ...promises])
+  .then(async () => {
+    logger.info(`${organisations.length} Organisations Created`);
+    logger.info(`${DOCUMENTS} Events Created`);
+    logger.info(`${locations.length} Locations Created`);
+    logger.info('Database Seed Completed!');
+    await db.disconnect(logger);
   })
-  .catch((err) => {
-    logger.error(err, 'Error seeding Database');
+  .catch((e) => {
+    logger.error(e, 'Something funky happened');
     process.exit(1);
+  })
+  .finally(() => {
+    process.exit();
   });
