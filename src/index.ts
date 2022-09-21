@@ -1,4 +1,4 @@
-import dbConnect from './db/connect';
+import * as db from './db/connect';
 import loggerInstance from './logger';
 import createServer from './server';
 
@@ -12,12 +12,20 @@ createServer(logger).catch((err) => {
 });
 
 // Create Mongo DB Connection
-dbConnect(logger).catch((err) => {
+db.connect(logger).catch((err) => {
   logger.error(err, 'Error Connecting to Database');
   process.exit(1);
 });
 
 // Ensure SIGINT exists application
+// and handle gracefully
 process.on('SIGINT', () => {
-  process.exit();
+  db.disconnect(logger)
+    .then(() => process.exit())
+    .catch((err) => {
+      logger.error(
+        err,
+        'There was an error gracefully disconnecting from the database',
+      );
+    });
 });
