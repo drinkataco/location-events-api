@@ -5,6 +5,7 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -44,6 +45,13 @@ export type Location = {
   longitude?: Maybe<Scalars['Int']>;
 };
 
+export type Meta = {
+  __typename?: 'Meta';
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  total?: Maybe<Scalars['Int']>;
+};
+
 export type Organisation = {
   __typename?: 'Organisation';
   _id: Scalars['ID'];
@@ -56,9 +64,39 @@ export type Organisation = {
 
 export type Query = {
   __typename?: 'Query';
-  events?: Maybe<Array<Maybe<Event>>>;
-  locations?: Maybe<Array<Maybe<Location>>>;
-  organisations?: Maybe<Array<Maybe<Organisation>>>;
+  event?: Maybe<Event>;
+  events?: Maybe<QueryResult>;
+  locations?: Maybe<QueryResult>;
+  organisations?: Maybe<QueryResult>;
+};
+
+
+export type QueryEventArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryEventsArgs = {
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QueryLocationsArgs = {
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QueryOrganisationsArgs = {
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+};
+
+export type QueryResult = {
+  __typename?: 'QueryResult';
+  meta?: Maybe<Meta>;
+  results: Array<Maybe<Event>>;
 };
 
 export type Schedule = {
@@ -143,8 +181,10 @@ export type ResolversTypes = {
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   Location: ResolverTypeWrapper<Location>;
+  Meta: ResolverTypeWrapper<Meta>;
   Organisation: ResolverTypeWrapper<Organisation>;
   Query: ResolverTypeWrapper<{}>;
+  QueryResult: ResolverTypeWrapper<QueryResult>;
   Schedule: ResolverTypeWrapper<Schedule>;
   String: ResolverTypeWrapper<Scalars['String']>;
 };
@@ -158,8 +198,10 @@ export type ResolversParentTypes = {
   ID: Scalars['ID'];
   Int: Scalars['Int'];
   Location: Location;
+  Meta: Meta;
   Organisation: Organisation;
   Query: {};
+  QueryResult: QueryResult;
   Schedule: Schedule;
   String: Scalars['String'];
 };
@@ -197,6 +239,13 @@ export type LocationResolvers<ContextType = MyContext, ParentType extends Resolv
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type MetaResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Meta'] = ResolversParentTypes['Meta']> = {
+  limit?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  offset?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  total?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type OrganisationResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Organisation'] = ResolversParentTypes['Organisation']> = {
   _id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
@@ -208,9 +257,16 @@ export type OrganisationResolvers<ContextType = MyContext, ParentType extends Re
 };
 
 export type QueryResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  events?: Resolver<Maybe<Array<Maybe<ResolversTypes['Event']>>>, ParentType, ContextType>;
-  locations?: Resolver<Maybe<Array<Maybe<ResolversTypes['Location']>>>, ParentType, ContextType>;
-  organisations?: Resolver<Maybe<Array<Maybe<ResolversTypes['Organisation']>>>, ParentType, ContextType>;
+  event?: Resolver<Maybe<ResolversTypes['Event']>, ParentType, ContextType, RequireFields<QueryEventArgs, 'id'>>;
+  events?: Resolver<Maybe<ResolversTypes['QueryResult']>, ParentType, ContextType, RequireFields<QueryEventsArgs, 'limit' | 'offset'>>;
+  locations?: Resolver<Maybe<ResolversTypes['QueryResult']>, ParentType, ContextType, RequireFields<QueryLocationsArgs, 'limit' | 'offset'>>;
+  organisations?: Resolver<Maybe<ResolversTypes['QueryResult']>, ParentType, ContextType, RequireFields<QueryOrganisationsArgs, 'limit' | 'offset'>>;
+};
+
+export type QueryResultResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['QueryResult'] = ResolversParentTypes['QueryResult']> = {
+  meta?: Resolver<Maybe<ResolversTypes['Meta']>, ParentType, ContextType>;
+  results?: Resolver<Array<Maybe<ResolversTypes['Event']>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type ScheduleResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Schedule'] = ResolversParentTypes['Schedule']> = {
@@ -224,8 +280,10 @@ export type Resolvers<ContextType = MyContext> = {
   Date?: GraphQLScalarType;
   Event?: EventResolvers<ContextType>;
   Location?: LocationResolvers<ContextType>;
+  Meta?: MetaResolvers<ContextType>;
   Organisation?: OrganisationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  QueryResult?: QueryResultResolvers<ContextType>;
   Schedule?: ScheduleResolvers<ContextType>;
 };
 
