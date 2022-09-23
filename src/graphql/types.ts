@@ -28,7 +28,8 @@ export default gql`
     address: Address
     latitude: Int
     longitude: Int
-    events: [Event]
+    findEvents(limit: Int = 200, offset: Int = 0): EventQueryResult
+    findOrganisations(limit: Int = 200, offset: Int = 0): EventQueryResult
   }
 
   type Event {
@@ -46,7 +47,7 @@ export default gql`
     createdAt: Date!
     updatedAt: Date!
     location: Location
-    events: [Event]
+    findEvents(limit: Int = 200, offset: Int = 0): EventQueryResult
   }
 
   #
@@ -77,8 +78,8 @@ export default gql`
     event(id: ID!): Event
     location(id: ID!): Location
     organisation(id: ID!): Organisation
-    events(limit: Int = 200, offset: Int = 0): EventQueryResult
-    locations(limit: Int = 200, offset: Int = 0): LocationQueryResult
-    organisations(limit: Int = 200, offset: Int = 0): OrganisationQueryResult
+    findEvents(limit: Int = 200, offset: Int = 0): EventQueryResult
+    findLocations(limit: Int = 200, offset: Int = 0): LocationQueryResult
+    findOrganisations(limit: Int = 200, offset: Int = 0): OrganisationQueryResult
   }
 `;
