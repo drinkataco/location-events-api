@@ -6,6 +6,16 @@
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking"
   ],
+  "overrides": [
+    {
+      "files": ["*.spec.ts"],
+      "plugins": ["jest"],
+      "extends": ["plugin:jest/all"],
+      "rules": {
+        "jest/no-hooks": "off"
+      }
+    }
+  ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": "./tsconfig.json"
@@ -16,5 +26,5 @@
     "no-underscore-dangle": "off",
     "operator-linebreak": "off"
   },
-  "ignorePatterns": ["dist/", "node_modules/", "src/generated/"]
+  "ignorePatterns": ["coverage", "dist/", "node_modules/", "src/generated/"]
 }
