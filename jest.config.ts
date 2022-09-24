@@ -6,7 +6,8 @@ const config: Config = {
   testEnvironment: 'node',
   testMatch: ['<rootDir>/src/?(*.)spec.ts', '<rootDir>/src/**/?(*.)spec.ts'],
   collectCoverage: true,
-  collectCoverageFrom: ['src/**/*.ts', '!src/**/*.d.ts'],
+  collectCoverageFrom: ['src/*.ts', 'src/**/*.ts', '!src/**/*.d.ts'],
+  coveragePathIgnorePatterns: ['src/index.ts', 'src/generated/*.ts'],
   coverageThreshold: {
     global: {
       branches: 100,
