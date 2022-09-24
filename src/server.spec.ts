@@ -1,14 +1,12 @@
 import { FastifyInstance } from 'fastify';
 
 import server from './server';
-// TODO: mock me and others
-import loggerInstance from './logger';
 
 let serverInstance!: FastifyInstance;
 
 describe('the server should start', () => {
   beforeAll(async () => {
-    serverInstance = await server(loggerInstance());
+    serverInstance = await server();
   });
 
   afterAll(async () => {
@@ -24,6 +22,21 @@ describe('the server should start', () => {
     });
 
     expect(response.statusCode).toBe(404);
+  });
+
+  it('should return a 400 csrf check for the graphql endpoint with empty headers', async () => {
+    expect.assertions(2);
+
+    const response = await serverInstance.inject({
+      method: 'GET',
+      url: '/graphql',
+    });
+
+    expect(response.body).toMatch(
+      /^This operation has been blocked as a potential Cross-Site Request Forgery/,
+    );
+
+    expect(response.statusCode).toBe(400);
   });
 
   it('should return a 400 for the graphql endpoint with an empty query', async () => {

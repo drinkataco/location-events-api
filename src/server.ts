@@ -4,7 +4,7 @@ import pino from 'pino';
 import apolloInstance from './apollo';
 import { SERVER_PORT, SERVER_HOST } from './consts';
 
-export default async (logger: pino.Logger): Promise<FastifyInstance> => {
+export default async (logger?: pino.Logger): Promise<FastifyInstance> => {
   const config: FastifyServerOptions = { logger };
 
   const fastify: FastifyInstance = Fastify(config);
