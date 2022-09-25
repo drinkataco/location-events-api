@@ -1,6 +1,5 @@
 import pino from 'pino';
 
-// import * as consts from './consts';
 import logger from './logger';
 
 // Mock pino so we can spy on its construction
