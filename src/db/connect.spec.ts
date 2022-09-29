@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 import * as db from './connect';
-import { MONGO_CONNECTION } from '../consts';
+import { MONGO_URL } from '../consts';
 import logger from '../logger';
 
 // Mock Mongoose Connection
@@ -23,7 +23,7 @@ describe('database connection', () => {
 
     await db.connect(logger());
 
-    expect(mongoose.connect).toHaveBeenCalledWith(MONGO_CONNECTION);
+    expect(mongoose.connect).toHaveBeenCalledWith(MONGO_URL);
   });
 
   it('disconnects from mongo', async () => {
