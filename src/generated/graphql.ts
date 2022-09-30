@@ -36,13 +36,38 @@ export type Event = {
   time?: Maybe<Schedule>;
 };
 
+export type EventQueryResult = {
+  __typename?: 'EventQueryResult';
+  meta?: Maybe<Meta>;
+  results: Array<Maybe<Event>>;
+};
+
 export type Location = {
   __typename?: 'Location';
   _id: Scalars['ID'];
   address?: Maybe<Address>;
-  events?: Maybe<Array<Maybe<Event>>>;
+  findEvents?: Maybe<EventQueryResult>;
+  findOrganisations?: Maybe<EventQueryResult>;
   latitude?: Maybe<Scalars['Int']>;
   longitude?: Maybe<Scalars['Int']>;
+};
+
+
+export type LocationFindEventsArgs = {
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type LocationFindOrganisationsArgs = {
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+};
+
+export type LocationQueryResult = {
+  __typename?: 'LocationQueryResult';
+  meta?: Maybe<Meta>;
+  results: Array<Maybe<Location>>;
 };
 
 export type Meta = {
@@ -56,18 +81,32 @@ export type Organisation = {
   __typename?: 'Organisation';
   _id: Scalars['ID'];
   createdAt: Scalars['Date'];
-  events?: Maybe<Array<Maybe<Event>>>;
+  findEvents?: Maybe<EventQueryResult>;
   location?: Maybe<Location>;
   name: Scalars['String'];
   updatedAt: Scalars['Date'];
 };
 
+
+export type OrganisationFindEventsArgs = {
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+};
+
+export type OrganisationQueryResult = {
+  __typename?: 'OrganisationQueryResult';
+  meta?: Maybe<Meta>;
+  results: Array<Maybe<Organisation>>;
+};
+
 export type Query = {
   __typename?: 'Query';
   event?: Maybe<Event>;
-  events?: Maybe<QueryResult>;
-  locations?: Maybe<QueryResult>;
-  organisations?: Maybe<QueryResult>;
+  findEvents?: Maybe<EventQueryResult>;
+  findLocations?: Maybe<LocationQueryResult>;
+  findOrganisations?: Maybe<OrganisationQueryResult>;
+  location?: Maybe<Location>;
+  organisation?: Maybe<Organisation>;
 };
 
 
@@ -76,27 +115,31 @@ export type QueryEventArgs = {
 };
 
 
-export type QueryEventsArgs = {
+export type QueryFindEventsArgs = {
   limit?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
 };
 
 
-export type QueryLocationsArgs = {
+export type QueryFindLocationsArgs = {
   limit?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
 };
 
 
-export type QueryOrganisationsArgs = {
+export type QueryFindOrganisationsArgs = {
   limit?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
 };
 
-export type QueryResult = {
-  __typename?: 'QueryResult';
-  meta?: Maybe<Meta>;
-  results: Array<Maybe<Event>>;
+
+export type QueryLocationArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryOrganisationArgs = {
+  id: Scalars['ID'];
 };
 
 export type Schedule = {
@@ -178,13 +221,15 @@ export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Date: ResolverTypeWrapper<Scalars['Date']>;
   Event: ResolverTypeWrapper<Event>;
+  EventQueryResult: ResolverTypeWrapper<EventQueryResult>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   Location: ResolverTypeWrapper<Location>;
+  LocationQueryResult: ResolverTypeWrapper<LocationQueryResult>;
   Meta: ResolverTypeWrapper<Meta>;
   Organisation: ResolverTypeWrapper<Organisation>;
+  OrganisationQueryResult: ResolverTypeWrapper<OrganisationQueryResult>;
   Query: ResolverTypeWrapper<{}>;
-  QueryResult: ResolverTypeWrapper<QueryResult>;
   Schedule: ResolverTypeWrapper<Schedule>;
   String: ResolverTypeWrapper<Scalars['String']>;
 };
@@ -195,13 +240,15 @@ export type ResolversParentTypes = {
   Boolean: Scalars['Boolean'];
   Date: Scalars['Date'];
   Event: Event;
+  EventQueryResult: EventQueryResult;
   ID: Scalars['ID'];
   Int: Scalars['Int'];
   Location: Location;
+  LocationQueryResult: LocationQueryResult;
   Meta: Meta;
   Organisation: Organisation;
+  OrganisationQueryResult: OrganisationQueryResult;
   Query: {};
-  QueryResult: QueryResult;
   Schedule: Schedule;
   String: Scalars['String'];
 };
@@ -230,12 +277,25 @@ export type EventResolvers<ContextType = MyContext, ParentType extends Resolvers
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type EventQueryResultResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['EventQueryResult'] = ResolversParentTypes['EventQueryResult']> = {
+  meta?: Resolver<Maybe<ResolversTypes['Meta']>, ParentType, ContextType>;
+  results?: Resolver<Array<Maybe<ResolversTypes['Event']>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type LocationResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Location'] = ResolversParentTypes['Location']> = {
   _id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   address?: Resolver<Maybe<ResolversTypes['Address']>, ParentType, ContextType>;
-  events?: Resolver<Maybe<Array<Maybe<ResolversTypes['Event']>>>, ParentType, ContextType>;
+  findEvents?: Resolver<Maybe<ResolversTypes['EventQueryResult']>, ParentType, ContextType, RequireFields<LocationFindEventsArgs, 'limit' | 'offset'>>;
+  findOrganisations?: Resolver<Maybe<ResolversTypes['EventQueryResult']>, ParentType, ContextType, RequireFields<LocationFindOrganisationsArgs, 'limit' | 'offset'>>;
   latitude?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   longitude?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type LocationQueryResultResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['LocationQueryResult'] = ResolversParentTypes['LocationQueryResult']> = {
+  meta?: Resolver<Maybe<ResolversTypes['Meta']>, ParentType, ContextType>;
+  results?: Resolver<Array<Maybe<ResolversTypes['Location']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -249,24 +309,26 @@ export type MetaResolvers<ContextType = MyContext, ParentType extends ResolversP
 export type OrganisationResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Organisation'] = ResolversParentTypes['Organisation']> = {
   _id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
-  events?: Resolver<Maybe<Array<Maybe<ResolversTypes['Event']>>>, ParentType, ContextType>;
+  findEvents?: Resolver<Maybe<ResolversTypes['EventQueryResult']>, ParentType, ContextType, RequireFields<OrganisationFindEventsArgs, 'limit' | 'offset'>>;
   location?: Resolver<Maybe<ResolversTypes['Location']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type QueryResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  event?: Resolver<Maybe<ResolversTypes['Event']>, ParentType, ContextType, RequireFields<QueryEventArgs, 'id'>>;
-  events?: Resolver<Maybe<ResolversTypes['QueryResult']>, ParentType, ContextType, RequireFields<QueryEventsArgs, 'limit' | 'offset'>>;
-  locations?: Resolver<Maybe<ResolversTypes['QueryResult']>, ParentType, ContextType, RequireFields<QueryLocationsArgs, 'limit' | 'offset'>>;
-  organisations?: Resolver<Maybe<ResolversTypes['QueryResult']>, ParentType, ContextType, RequireFields<QueryOrganisationsArgs, 'limit' | 'offset'>>;
+export type OrganisationQueryResultResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['OrganisationQueryResult'] = ResolversParentTypes['OrganisationQueryResult']> = {
+  meta?: Resolver<Maybe<ResolversTypes['Meta']>, ParentType, ContextType>;
+  results?: Resolver<Array<Maybe<ResolversTypes['Organisation']>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type QueryResultResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['QueryResult'] = ResolversParentTypes['QueryResult']> = {
-  meta?: Resolver<Maybe<ResolversTypes['Meta']>, ParentType, ContextType>;
-  results?: Resolver<Array<Maybe<ResolversTypes['Event']>>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+export type QueryResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  event?: Resolver<Maybe<ResolversTypes['Event']>, ParentType, ContextType, RequireFields<QueryEventArgs, 'id'>>;
+  findEvents?: Resolver<Maybe<ResolversTypes['EventQueryResult']>, ParentType, ContextType, RequireFields<QueryFindEventsArgs, 'limit' | 'offset'>>;
+  findLocations?: Resolver<Maybe<ResolversTypes['LocationQueryResult']>, ParentType, ContextType, RequireFields<QueryFindLocationsArgs, 'limit' | 'offset'>>;
+  findOrganisations?: Resolver<Maybe<ResolversTypes['OrganisationQueryResult']>, ParentType, ContextType, RequireFields<QueryFindOrganisationsArgs, 'limit' | 'offset'>>;
+  location?: Resolver<Maybe<ResolversTypes['Location']>, ParentType, ContextType, RequireFields<QueryLocationArgs, 'id'>>;
+  organisation?: Resolver<Maybe<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<QueryOrganisationArgs, 'id'>>;
 };
 
 export type ScheduleResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Schedule'] = ResolversParentTypes['Schedule']> = {
@@ -279,11 +341,13 @@ export type Resolvers<ContextType = MyContext> = {
   Address?: AddressResolvers<ContextType>;
   Date?: GraphQLScalarType;
   Event?: EventResolvers<ContextType>;
+  EventQueryResult?: EventQueryResultResolvers<ContextType>;
   Location?: LocationResolvers<ContextType>;
+  LocationQueryResult?: LocationQueryResultResolvers<ContextType>;
   Meta?: MetaResolvers<ContextType>;
   Organisation?: OrganisationResolvers<ContextType>;
+  OrganisationQueryResult?: OrganisationQueryResultResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
-  QueryResult?: QueryResultResolvers<ContextType>;
   Schedule?: ScheduleResolvers<ContextType>;
 };
 

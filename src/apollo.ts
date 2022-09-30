@@ -6,7 +6,6 @@ import { ApolloServer } from 'apollo-server-fastify';
 import { ApolloServerPlugin } from 'apollo-server-plugin-base';
 import { FastifyInstance } from 'fastify';
 
-import { NODE_ENV } from './consts';
 import { dataSources, resolvers, typeDefs } from './graphql';
 
 /**
@@ -37,11 +36,8 @@ export default async (fastify: FastifyInstance): Promise<ApolloServer> => {
   const plugins = [
     fastifyAppClosePlugin(fastify),
     ApolloServerPluginDrainHttpServer({ httpServer: fastify.server }),
+    ApolloServerPluginLandingPageLocalDefault({ embed: true }),
   ];
-
-  if (NODE_ENV === 'local') {
-    plugins.push(ApolloServerPluginLandingPageLocalDefault({ embed: true }));
-  }
 
   const apollo = new ApolloServer({
     dataSources,

@@ -1,17 +1,23 @@
 import mongoose from 'mongoose';
 import pino from 'pino';
 
-import { MONGO_CONNECTION } from '../consts';
+import { MONGO_URL } from '../consts';
 
-export const connect = async (logger: pino.Logger) => {
-  await mongoose.connect(MONGO_CONNECTION);
+export const connect = async (logger?: pino.Logger) => {
+  await mongoose.connect(MONGO_URL);
 
-  // Just get basic connection details to print
-  const dbName = (MONGO_CONNECTION.split('@')[1] as string).split('?')[0];
-  logger.info(`Connected to Mongo Database mongodb://${dbName as string}`);
+  // Just get connection details (without username and password) to print
+  if (logger) {
+    const dbName = MONGO_URL.includes('@')
+      ? `mongodb://${
+        (MONGO_URL.split('@')?.[1] as string)?.split('?')[0] as string
+      }`
+      : MONGO_URL;
+    logger.info(`Connected to Mongo Database ${dbName}`);
+  }
 };
 
-export const disconnect = async (logger: pino.Logger) => {
+export const disconnect = async (logger?: pino.Logger) => {
   await mongoose.connection.close();
-  logger.info('Disconnected from Mongo');
+  if (logger) logger.info('Disconnected from Mongo');
 };

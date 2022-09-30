@@ -1,4 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
+/* istanbul ignore file */
 /*
  * This asynchronous script is a helper for seeding the database with documents
  *
@@ -172,28 +173,35 @@ const createEvent = (location: Location, organisation: Organisation) => {
 /*
  * Create documents for use. Each will also create a promise to be resolved.
  */
-Array.from(Array(DOCUMENTS)).forEach(() => {
-  const org = getDocument<Organisation>(organisations, createOrganisation);
-  const loc = getDocument<Location>(locations, createLocation, 0.2);
+const createDocuments = (amount: number): Promise<unknown>[] => {
+  Array.from(Array(amount)).forEach(() => {
+    const org = getDocument<Organisation>(organisations, createOrganisation);
+    const loc = getDocument<Location>(locations, createLocation, 0.2);
 
-  createEvent(loc, org);
-});
-
-/*
- * Speedy - connect to the db, and create ALL documents in unison
- */
-Promise.all([db.connect(logger), ...promises])
-  .then(async () => {
-    logger.info(`${organisations.length} Organisations Created`);
-    logger.info(`${DOCUMENTS} Events Created`);
-    logger.info(`${locations.length} Locations Created`);
-    logger.info('Database Seed Completed!');
-    await db.disconnect(logger);
-  })
-  .catch((e) => {
-    logger.error(e, 'Something funky happened');
-    process.exit(1);
-  })
-  .finally(() => {
-    process.exit();
+    createEvent(loc, org);
   });
+
+  return promises;
+};
+
+// If this script is called directly, we'll automatically run seeding
+if (require.main === module) {
+  // Speedy - connect to the db, and create ALL documents in unison
+  Promise.all([db.connect(logger), ...createDocuments(DOCUMENTS)])
+    .then(async () => {
+      logger.info(`${organisations.length} Organisations Created`);
+      logger.info(`${DOCUMENTS} Events Created`);
+      logger.info(`${locations.length} Locations Created`);
+      logger.info('Database Seed Completed!');
+      await db.disconnect(logger);
+    })
+    .catch((e) => {
+      logger.error(e, 'Something funky happened');
+      process.exit(1);
+    })
+    .finally(() => {
+      process.exit();
+    });
+}
+
+export default createDocuments;

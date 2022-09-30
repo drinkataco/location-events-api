@@ -10,6 +10,9 @@ import * as Types from '../generated/graphql';
 type CollectionArgs = {
   limit: number;
   offset: number;
+  fields?: {
+    [s: string]: string,
+  },
 };
 
 /**
@@ -22,10 +25,10 @@ type CollectionArgs = {
  */
 const getCollection =
   <T>(model: Model<T>, dataSourceName: string) =>
-    async (_: never, args: CollectionArgs, ctx: MyContext) => {
+    async (_: never | undefined, args: CollectionArgs, ctx: MyContext) => {
       const dataSource =
-        ctx.dataSources[dataSourceName as keyof typeof ctx.dataSources];
-      const results = await dataSource.findAll();
+      ctx.dataSources[dataSourceName as keyof typeof ctx.dataSources];
+      const results = await dataSource.findByFields(args.fields || {});
       return {
         meta: {
           total: await model.countDocuments({}),
@@ -55,10 +58,10 @@ export default {
   // Standard Queries
   //
   Query: {
-    // Collections
-    events: getCollection<Types.Event>(Models.Event, 'events'),
-    locations: getCollection<Types.Location>(Models.Location, 'locations'),
-    organisations: getCollection<Types.Organisation>(
+    // Collection search functions
+    findEvents: getCollection<Types.Event>(Models.Event, 'events'),
+    findLocations: getCollection<Types.Location>(Models.Location, 'locations'),
+    findOrganisations: getCollection<Types.Organisation>(
       Models.Organisation,
       'organisations',
     ),
@@ -69,12 +72,23 @@ export default {
   },
   //
   // Inverse Lookups
+  // This allows users to find related collections, with the ID being implied
   //
   Organisation: {
-    events: (organisation: Types.Organisation, _: never, ctx: MyContext) =>
-      ctx.dataSources.events.findByFields({
-        organisation_id: organisation._id,
-      }),
+    // Find one to one
+    location: (event: Types.Event, _: never, ctx: MyContext) =>
+      ctx.dataSources.locations.findOneById(event.location),
+    // Find one to many
+    findEvents: (
+      organisation: Types.Organisation,
+      args: CollectionArgs,
+      ctx: MyContext,
+    ) =>
+      getCollection<Types.Event>(Models.Event, 'events')(
+        undefined,
+        { ...args, fields: { organisation: organisation._id } },
+        ctx,
+      ),
   },
   Event: {
     organisation: (event: Types.Event, _: never, ctx: MyContext) =>
@@ -83,9 +97,26 @@ export default {
       ctx.dataSources.locations.findOneById(event.location),
   },
   Location: {
-    events: (location: Types.Location, _: never, ctx: MyContext) =>
-      ctx.dataSources.events.findByFields({
-        location_id: location._id,
-      }),
+    // Find one to many
+    findEvents: (
+      location: Types.Location,
+      args: CollectionArgs,
+      ctx: MyContext,
+    ) =>
+      getCollection<Types.Event>(Models.Event, 'events')(
+        undefined,
+        { ...args, fields: { location: location._id } },
+        ctx,
+      ),
+    findOrganisations: (
+      location: Types.Location,
+      args: CollectionArgs,
+      ctx: MyContext,
+    ) =>
+      getCollection<Types.Organisation>(Models.Organisation, 'organisations')(
+        undefined,
+        { ...args, fields: { location: location._id } },
+        ctx,
+      ),
   },
 };

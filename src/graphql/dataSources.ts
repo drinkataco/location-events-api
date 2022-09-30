@@ -5,11 +5,7 @@ import type { Event, Location, Organisation } from '../generated/graphql';
 import * as Models from '../db/models';
 
 // These apollo datasources will have effectively the same pattern
-class MyDataSource<T> extends MongoDataSource<T> {
-  public findAll() {
-    return this.findByFields({});
-  }
-
+export class MyDataSource<T> extends MongoDataSource<T> {
   /**
    * This allows us to grab ObjectIds from GraphQL types
    */
