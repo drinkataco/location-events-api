@@ -37,7 +37,7 @@ export default gql`
     name: String!
     description: String
     time: Schedule
-    location: Location!
+    location: Location
     organisation: Organisation!
   }
 
@@ -81,5 +81,40 @@ export default gql`
     findEvents(limit: Int = 200, offset: Int = 0): EventQueryResult
     findLocations(limit: Int = 200, offset: Int = 0): LocationQueryResult
     findOrganisations(limit: Int = 200, offset: Int = 0): OrganisationQueryResult
+  }
+
+  #
+  # Mutations 👾
+  #
+  type MutationLocationResult {
+    success: Boolean!
+    data: Location
+  }
+
+  type MutationOrganisationResult {
+    success: Boolean!
+    data: Organisation
+  }
+
+  type MutationEventResult {
+    success: Boolean!
+    data: Event
+  }
+
+  type DeleteResult {
+    success: Boolean!
+    _id: ID!
+  }
+
+  type Mutation {
+    createLocation: MutationLocationResult
+    createOrganisation: MutationOrganisationResult
+    createEvent: MutationEventResult
+    updateLocation: MutationLocationResult
+    updateOrganisation: MutationOrganisationResult
+    updateEvent: MutationEventResult
+    deleteLocation: DeleteResult
+    deleteOrganisation: DeleteResult
+    deleteEvent: DeleteResult
   }
 `;

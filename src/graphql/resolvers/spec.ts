@@ -1,10 +1,10 @@
 import { ApolloServer } from 'apollo-server-fastify';
 
-import { typeDefs, resolvers, dataSources } from '.';
-import * as Models from '../db/models';
-import * as db from '../db/connect';
-import seed from '../db/seed';
-import * as T from '../generated/graphql';
+import { typeDefs, resolvers, dataSources } from '..';
+import * as Models from '../../db/models';
+import * as db from '../../db/connect';
+import seed from '../../db/seed';
+import * as T from '../../generated/graphql';
 
 // We're going to use a test apollo instance
 let apolloServer!: ApolloServer;

@@ -1,8 +1,8 @@
 import type { Model } from 'mongoose';
 
-import MyContext from './context';
-import * as Models from '../db/models';
-import * as Types from '../generated/graphql';
+import MyContext from '../context';
+import * as Models from '../../db/models';
+import * as Types from '../../generated/graphql';
 
 /**
  * Possible arguments for collection filtering
