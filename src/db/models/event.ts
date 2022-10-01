@@ -20,7 +20,6 @@ const eventSchema = new Schema<Event>(
       type: Schema.Types.ObjectId,
       ref: 'Location',
       index: true,
-      required: true,
     },
   },
   { timestamps: true },
