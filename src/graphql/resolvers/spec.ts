@@ -5,11 +5,21 @@ import * as Models from '../../db/models';
 import * as db from '../../db/connect';
 import seed from '../../db/seed';
 import * as T from '../../generated/graphql';
+import * as Geocode from '../../geocode';
 
 // We're going to use a test apollo instance
 let apolloServer!: ApolloServer;
 // we'll use a singular id throughout when querying docs. we'll source this after db seed
 let eventId!: string;
+
+// const findAddressFromLatLng = jest.fn();
+
+jest.mock('../../geocode', () => ({
+  findAddressFromLatLng: jest.fn(),
+  findLatLngFromAddress: jest.fn(),
+}));
+
+const mockedGeocode = Geocode as jest.Mocked<typeof Geocode>;
 
 describe('graphql resolvers', () => {
   beforeAll(async () => {
@@ -324,5 +334,123 @@ describe('graphql resolvers', () => {
     });
 
     expect(result.errors).toBeDefined();
+  });
+
+  describe('location fields set from api if partially provided', () => {
+    const locationInput: T.LocationInput = {
+      address: {
+        line1: '600 Metropolitan Ave',
+        line2: 'Brooklyn',
+        city: 'New York City',
+        region: 'New York',
+        postCode: '112211',
+        country: 'USA',
+      },
+      latitude: 40.713951,
+      longitude: -73.948925,
+    };
+
+    const locationQuery = `mutation CreateLocation($location: LocationInput!) {
+        createLocation(
+          location: $location
+        ) {
+          success
+          result {
+            _id
+          }
+        }
+      }
+    `;
+
+    it('does not call a service if latlong and address provided', async () => {
+      expect.assertions(3);
+
+      const result = await apolloServer.executeOperation({
+        query: locationQuery,
+        variables: { location: locationInput },
+      });
+
+      // Expect response to be on board
+      const response = result.data?.createLocation as T.MutationLocationResult;
+      const data = response.result;
+
+      expect(result.errors).toBeUndefined();
+      expect(data?._id).toBeDefined();
+      expect(Geocode.findAddressFromLatLng).not.toHaveBeenCalled();
+    });
+
+    it('finds an address when latlong provided but no address', async () => {
+      expect.assertions(3);
+
+      const locationInputNoAddress: T.LocationInput = {
+        latitude: locationInput.latitude,
+        longitude: locationInput.longitude,
+      };
+
+      mockedGeocode.findAddressFromLatLng.mockReturnValue(
+        Promise.resolve(locationInput.address as T.Address),
+      );
+
+      const result = await apolloServer.executeOperation({
+        query: locationQuery,
+        variables: { location: locationInputNoAddress },
+      });
+
+      // Expect response to be on board
+      const response = result.data?.createLocation as T.MutationLocationResult;
+      const data = response.result;
+
+      expect(result.errors).toBeUndefined();
+      expect(data?._id).toBeDefined();
+      expect(Geocode.findAddressFromLatLng).toHaveBeenCalledWith(
+        locationInput.latitude,
+        locationInput.longitude,
+      );
+    });
+
+    it('finds latlong when address but no latlong values', async () => {
+      expect.assertions(3);
+
+      const locationInputNoLatLng: T.LocationInput = {
+        address: locationInput.address,
+      };
+
+      mockedGeocode.findLatLngFromAddress.mockReturnValue(
+        Promise.resolve([
+          locationInput.latitude as number,
+          locationInput.longitude as number,
+        ]),
+      );
+
+      const result = await apolloServer.executeOperation({
+        query: locationQuery,
+        variables: { location: locationInputNoLatLng },
+      });
+
+      // Expect response to be on board
+      const response = result.data?.createLocation as T.MutationLocationResult;
+      const data = response.result;
+
+      expect(result.errors).toBeUndefined();
+      expect(data?._id).toBeDefined();
+      expect(Geocode.findLatLngFromAddress).toHaveBeenCalledWith(
+        locationInput.address,
+      );
+    });
+
+    it('throws an error if lat long and address values have not been set', async () => {
+      expect.assertions(1);
+
+      const result = await apolloServer.executeOperation({
+        query: locationQuery,
+        variables: { location: {} },
+      });
+
+      expect(result.errors).toMatchInlineSnapshot(`
+        [
+          [GraphQLError: Require lat/long or address for location],
+        ]
+      `);
+    });
   });
 });

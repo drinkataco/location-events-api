@@ -1,5 +1,6 @@
-import * as Types from '../../generated/graphql';
 import * as Models from '../../db/models';
+import * as Types from '../../generated/graphql';
+import * as Geocode from '../../geocode';
 
 /**
  * We can create a location alongside a createEvent and createOrganisation mutation
@@ -10,18 +11,29 @@ import * as Models from '../../db/models';
  * @returns Location document instance
  */
 const insertLocation = async (
-  location: Partial<Types.Location>,
+  location: Partial<Types.LocationInput>,
 ): Promise<Types.Location> => {
   const newLocation = location;
 
-  // TODO: If address isn't supplied, we'll make sure to fetch it from Google
-  if (!newLocation.address) {
-    newLocation.address = {
-      line1: 'test',
-      city: 'Birmingham',
-      postCode: 'B16 8DD',
-      country: 'GB',
-    };
+  if (
+    (!newLocation.latitude || !newLocation.longitude) &&
+    !newLocation.address
+  ) {
+    throw Error('Require lat/long or address for location');
+  }
+
+  // If a latlng has been supplied but no address, fetch the address
+  if (!newLocation.address && newLocation.latitude && newLocation.longitude) {
+    newLocation.address = await Geocode.findAddressFromLatLng(
+      newLocation.latitude,
+      newLocation.longitude,
+    );
+  }
+
+  // If an address has been supplied, but no latlng, fetch latlng
+  if (newLocation.address && !newLocation.latitude && !newLocation.longitude) {
+    const latLng = await Geocode.findLatLngFromAddress(newLocation.address);
+    [newLocation.latitude, newLocation.longitude] = latLng;
   }
 
   const inserted = new Models.Location(newLocation);
@@ -38,8 +50,11 @@ export default {
     //
     // CREATE
     //
-    createLocation: async (_: never, location: Partial<Types.Location>) => {
-      const result = await insertLocation(location);
+    createLocation: async (
+      _: never,
+      args: { location: Partial<Types.Location> },
+    ) => {
+      const result = await insertLocation(args.location);
       return {
         success: true,
         result,
@@ -50,7 +65,7 @@ export default {
       _: never,
       args: {
         organisation: Partial<Types.OrganisationInput>;
-        location?: Partial<Types.Location>;
+        location?: Partial<Types.LocationInput>;
       },
     ) => {
       const { location, organisation } = args;
