@@ -88,25 +88,21 @@ export default gql`
   #
   type MutationLocationResult {
     success: Boolean!
-    errors: [String]
     result: Location
   }
 
   type MutationOrganisationResult {
     success: Boolean!
-    errors: [String]
     result: Organisation
   }
 
   type MutationEventResult {
     success: Boolean!
-    errors: [String]
     result: Event
   }
 
-  type DeleteResult {
+  type UpdateDeleteResult {
     success: Boolean!
-    errors: [String]
     _id: ID!
   }
 
@@ -132,6 +128,11 @@ export default gql`
     name: String!
     location: ID
   }
+  
+  input OrganisationInputUpdate {
+    name: String
+    location: ID
+  }
 
   input ScheduleInput {
     start: Date!
@@ -144,6 +145,14 @@ export default gql`
     time: ScheduleInput
     location: ID
     organisation: ID!
+  }
+
+  input EventInputUpdate {
+    name: String
+    description: String
+    time: ScheduleInput
+    location: ID
+    organisation: ID
   }
 
   #
@@ -161,12 +170,21 @@ export default gql`
         location: LocationInput
       ): MutationEventResult
     # Editors
-    updateLocation: MutationLocationResult
-    updateOrganisation: MutationOrganisationResult
-    updateEvent: MutationEventResult
+    updateLocation(
+        id: ID!
+        location: LocationInput!
+      ): UpdateDeleteResult
+    updateOrganisation(
+        id: ID!,
+        organisation: OrganisationInputUpdate!
+      ): UpdateDeleteResult
+    updateEvent(
+        id: ID!
+        event: EventInputUpdate!
+      ): UpdateDeleteResult
     # Removers
-    deleteLocation: DeleteResult
-    deleteOrganisation: DeleteResult
-    deleteEvent: DeleteResult
+    deleteLocation: UpdateDeleteResult
+    deleteOrganisation: UpdateDeleteResult
+    deleteEvent: UpdateDeleteResult
   }
 `;

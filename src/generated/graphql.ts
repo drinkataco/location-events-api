@@ -35,13 +35,6 @@ export type AddressInput = {
   region?: InputMaybe<Scalars['String']>;
 };
 
-export type DeleteResult = {
-  __typename?: 'DeleteResult';
-  _id: Scalars['ID'];
-  errors?: Maybe<Array<Maybe<Scalars['String']>>>;
-  success: Scalars['Boolean'];
-};
-
 export type Event = {
   __typename?: 'Event';
   _id: Scalars['ID'];
@@ -57,6 +50,14 @@ export type EventInput = {
   location?: InputMaybe<Scalars['ID']>;
   name: Scalars['String'];
   organisation: Scalars['ID'];
+  time?: InputMaybe<ScheduleInput>;
+};
+
+export type EventInputUpdate = {
+  description?: InputMaybe<Scalars['String']>;
+  location?: InputMaybe<Scalars['ID']>;
+  name?: InputMaybe<Scalars['String']>;
+  organisation?: InputMaybe<Scalars['ID']>;
   time?: InputMaybe<ScheduleInput>;
 };
 
@@ -112,12 +113,12 @@ export type Mutation = {
   createEvent?: Maybe<MutationEventResult>;
   createLocation?: Maybe<MutationLocationResult>;
   createOrganisation?: Maybe<MutationOrganisationResult>;
-  deleteEvent?: Maybe<DeleteResult>;
-  deleteLocation?: Maybe<DeleteResult>;
-  deleteOrganisation?: Maybe<DeleteResult>;
-  updateEvent?: Maybe<MutationEventResult>;
-  updateLocation?: Maybe<MutationLocationResult>;
-  updateOrganisation?: Maybe<MutationOrganisationResult>;
+  deleteEvent?: Maybe<UpdateDeleteResult>;
+  deleteLocation?: Maybe<UpdateDeleteResult>;
+  deleteOrganisation?: Maybe<UpdateDeleteResult>;
+  updateEvent?: Maybe<UpdateDeleteResult>;
+  updateLocation?: Maybe<UpdateDeleteResult>;
+  updateOrganisation?: Maybe<UpdateDeleteResult>;
 };
 
 
@@ -137,23 +138,38 @@ export type MutationCreateOrganisationArgs = {
   organisation: OrganisationInput;
 };
 
+
+export type MutationUpdateEventArgs = {
+  event: EventInputUpdate;
+  id: Scalars['ID'];
+};
+
+
+export type MutationUpdateLocationArgs = {
+  id: Scalars['ID'];
+  location: LocationInput;
+};
+
+
+export type MutationUpdateOrganisationArgs = {
+  id: Scalars['ID'];
+  organisation: OrganisationInputUpdate;
+};
+
 export type MutationEventResult = {
   __typename?: 'MutationEventResult';
-  errors?: Maybe<Array<Maybe<Scalars['String']>>>;
   result?: Maybe<Event>;
   success: Scalars['Boolean'];
 };
 
 export type MutationLocationResult = {
   __typename?: 'MutationLocationResult';
-  errors?: Maybe<Array<Maybe<Scalars['String']>>>;
   result?: Maybe<Location>;
   success: Scalars['Boolean'];
 };
 
 export type MutationOrganisationResult = {
   __typename?: 'MutationOrganisationResult';
-  errors?: Maybe<Array<Maybe<Scalars['String']>>>;
   result?: Maybe<Organisation>;
   success: Scalars['Boolean'];
 };
@@ -177,6 +193,11 @@ export type OrganisationFindEventsArgs = {
 export type OrganisationInput = {
   location?: InputMaybe<Scalars['ID']>;
   name: Scalars['String'];
+};
+
+export type OrganisationInputUpdate = {
+  location?: InputMaybe<Scalars['ID']>;
+  name?: InputMaybe<Scalars['String']>;
 };
 
 export type OrganisationQueryResult = {
@@ -237,6 +258,12 @@ export type Schedule = {
 export type ScheduleInput = {
   end?: InputMaybe<Scalars['Date']>;
   start: Scalars['Date'];
+};
+
+export type UpdateDeleteResult = {
+  __typename?: 'UpdateDeleteResult';
+  _id: Scalars['ID'];
+  success: Scalars['Boolean'];
 };
 
 
@@ -312,9 +339,9 @@ export type ResolversTypes = {
   AddressInput: AddressInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Date: ResolverTypeWrapper<Scalars['Date']>;
-  DeleteResult: ResolverTypeWrapper<DeleteResult>;
   Event: ResolverTypeWrapper<Event>;
   EventInput: EventInput;
+  EventInputUpdate: EventInputUpdate;
   EventQueryResult: ResolverTypeWrapper<EventQueryResult>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
@@ -329,11 +356,13 @@ export type ResolversTypes = {
   MutationOrganisationResult: ResolverTypeWrapper<MutationOrganisationResult>;
   Organisation: ResolverTypeWrapper<Organisation>;
   OrganisationInput: OrganisationInput;
+  OrganisationInputUpdate: OrganisationInputUpdate;
   OrganisationQueryResult: ResolverTypeWrapper<OrganisationQueryResult>;
   Query: ResolverTypeWrapper<{}>;
   Schedule: ResolverTypeWrapper<Schedule>;
   ScheduleInput: ScheduleInput;
   String: ResolverTypeWrapper<Scalars['String']>;
+  UpdateDeleteResult: ResolverTypeWrapper<UpdateDeleteResult>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -342,9 +371,9 @@ export type ResolversParentTypes = {
   AddressInput: AddressInput;
   Boolean: Scalars['Boolean'];
   Date: Scalars['Date'];
-  DeleteResult: DeleteResult;
   Event: Event;
   EventInput: EventInput;
+  EventInputUpdate: EventInputUpdate;
   EventQueryResult: EventQueryResult;
   Float: Scalars['Float'];
   ID: Scalars['ID'];
@@ -359,11 +388,13 @@ export type ResolversParentTypes = {
   MutationOrganisationResult: MutationOrganisationResult;
   Organisation: Organisation;
   OrganisationInput: OrganisationInput;
+  OrganisationInputUpdate: OrganisationInputUpdate;
   OrganisationQueryResult: OrganisationQueryResult;
   Query: {};
   Schedule: Schedule;
   ScheduleInput: ScheduleInput;
   String: Scalars['String'];
+  UpdateDeleteResult: UpdateDeleteResult;
 };
 
 export type AddressResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Address'] = ResolversParentTypes['Address']> = {
@@ -379,13 +410,6 @@ export type AddressResolvers<ContextType = MyContext, ParentType extends Resolve
 export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
   name: 'Date';
 }
-
-export type DeleteResultResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['DeleteResult'] = ResolversParentTypes['DeleteResult']> = {
-  _id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  errors?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
 
 export type EventResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Event'] = ResolversParentTypes['Event']> = {
   _id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -430,30 +454,27 @@ export type MutationResolvers<ContextType = MyContext, ParentType extends Resolv
   createEvent?: Resolver<Maybe<ResolversTypes['MutationEventResult']>, ParentType, ContextType, RequireFields<MutationCreateEventArgs, 'event'>>;
   createLocation?: Resolver<Maybe<ResolversTypes['MutationLocationResult']>, ParentType, ContextType, RequireFields<MutationCreateLocationArgs, 'location'>>;
   createOrganisation?: Resolver<Maybe<ResolversTypes['MutationOrganisationResult']>, ParentType, ContextType, RequireFields<MutationCreateOrganisationArgs, 'organisation'>>;
-  deleteEvent?: Resolver<Maybe<ResolversTypes['DeleteResult']>, ParentType, ContextType>;
-  deleteLocation?: Resolver<Maybe<ResolversTypes['DeleteResult']>, ParentType, ContextType>;
-  deleteOrganisation?: Resolver<Maybe<ResolversTypes['DeleteResult']>, ParentType, ContextType>;
-  updateEvent?: Resolver<Maybe<ResolversTypes['MutationEventResult']>, ParentType, ContextType>;
-  updateLocation?: Resolver<Maybe<ResolversTypes['MutationLocationResult']>, ParentType, ContextType>;
-  updateOrganisation?: Resolver<Maybe<ResolversTypes['MutationOrganisationResult']>, ParentType, ContextType>;
+  deleteEvent?: Resolver<Maybe<ResolversTypes['UpdateDeleteResult']>, ParentType, ContextType>;
+  deleteLocation?: Resolver<Maybe<ResolversTypes['UpdateDeleteResult']>, ParentType, ContextType>;
+  deleteOrganisation?: Resolver<Maybe<ResolversTypes['UpdateDeleteResult']>, ParentType, ContextType>;
+  updateEvent?: Resolver<Maybe<ResolversTypes['UpdateDeleteResult']>, ParentType, ContextType, RequireFields<MutationUpdateEventArgs, 'event' | 'id'>>;
+  updateLocation?: Resolver<Maybe<ResolversTypes['UpdateDeleteResult']>, ParentType, ContextType, RequireFields<MutationUpdateLocationArgs, 'id' | 'location'>>;
+  updateOrganisation?: Resolver<Maybe<ResolversTypes['UpdateDeleteResult']>, ParentType, ContextType, RequireFields<MutationUpdateOrganisationArgs, 'id' | 'organisation'>>;
 };
 
 export type MutationEventResultResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['MutationEventResult'] = ResolversParentTypes['MutationEventResult']> = {
-  errors?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
   result?: Resolver<Maybe<ResolversTypes['Event']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type MutationLocationResultResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['MutationLocationResult'] = ResolversParentTypes['MutationLocationResult']> = {
-  errors?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
   result?: Resolver<Maybe<ResolversTypes['Location']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type MutationOrganisationResultResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['MutationOrganisationResult'] = ResolversParentTypes['MutationOrganisationResult']> = {
-  errors?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
   result?: Resolver<Maybe<ResolversTypes['Organisation']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -490,10 +511,15 @@ export type ScheduleResolvers<ContextType = MyContext, ParentType extends Resolv
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type UpdateDeleteResultResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['UpdateDeleteResult'] = ResolversParentTypes['UpdateDeleteResult']> = {
+  _id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type Resolvers<ContextType = MyContext> = {
   Address?: AddressResolvers<ContextType>;
   Date?: GraphQLScalarType;
-  DeleteResult?: DeleteResultResolvers<ContextType>;
   Event?: EventResolvers<ContextType>;
   EventQueryResult?: EventQueryResultResolvers<ContextType>;
   Location?: LocationResolvers<ContextType>;
@@ -507,5 +533,6 @@ export type Resolvers<ContextType = MyContext> = {
   OrganisationQueryResult?: OrganisationQueryResultResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Schedule?: ScheduleResolvers<ContextType>;
+  UpdateDeleteResult?: UpdateDeleteResultResolvers<ContextType>;
 };
 

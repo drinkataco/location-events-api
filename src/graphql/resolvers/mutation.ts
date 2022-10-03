@@ -1,3 +1,6 @@
+import { UpdateQuery } from 'mongoose';
+
+import MyContext from '../context';
 import * as Models from '../../db/models';
 import * as Types from '../../generated/graphql';
 import * as Geocode from '../../geocode';
@@ -106,9 +109,60 @@ export default {
     //
     // UPDATE
     //
-    updateLocation: () => ({ success: true }),
-    updateOrganisation: () => ({ success: true }),
-    updateEvent: () => ({ success: true }),
+    updateOrganisation: async (
+      _: never,
+      args: {
+        id: string;
+        organisation: Partial<Types.Organisation>;
+      },
+      ctx: MyContext,
+    ) => {
+      await Models.Organisation.updateOne(
+        { _id: args.id },
+        args.organisation as UpdateQuery<Types.Organisation>,
+      );
+
+      // Remove from cache too
+      await ctx.dataSources.organisations.deleteFromCacheById(args.id);
+
+      return { success: true, _id: args.id };
+    },
+    updateLocation: async (
+      _: never,
+      args: {
+        id: string;
+        location: Partial<Types.Location>;
+      },
+      ctx: MyContext,
+    ) => {
+      await Models.Location.updateOne(
+        { _id: args.id },
+        args.location as UpdateQuery<Types.Location>,
+      );
+
+      // Remove from cache too
+      await ctx.dataSources.locations.deleteFromCacheById(args.id);
+
+      return { success: true, _id: args.id };
+    },
+    updateEvent: async (
+      _: never,
+      args: {
+        id: string;
+        event: Partial<Types.Event>;
+      },
+      ctx: MyContext,
+    ) => {
+      await Models.Event.updateOne(
+        { _id: args.id },
+        args.event as UpdateQuery<Types.Event>,
+      );
+
+      // Remove from cache too
+      await ctx.dataSources.events.deleteFromCacheById(args.id);
+
+      return { success: true, _id: args.id };
+    },
 
     //
     // DELETE
