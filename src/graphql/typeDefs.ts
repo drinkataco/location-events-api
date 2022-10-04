@@ -101,7 +101,12 @@ export default gql`
     result: Event
   }
 
-  type UpdateDeleteResult {
+  type UpdateResult {
+    success: Boolean!
+    _id: ID!
+  }
+
+  type DeleteResult {
     success: Boolean!
     _id: ID!
   }
@@ -173,18 +178,18 @@ export default gql`
     updateLocation(
         id: ID!
         location: LocationInput!
-      ): UpdateDeleteResult
+      ): UpdateResult
     updateOrganisation(
-        id: ID!,
+        id: ID!, 
         organisation: OrganisationInputUpdate!
-      ): UpdateDeleteResult
-    updateEvent(
-        id: ID!
+      ): UpdateResult
+    updateEvent( 
+        id: ID! 
         event: EventInputUpdate!
-      ): UpdateDeleteResult
+      ): UpdateResult
     # Removers
-    deleteLocation: UpdateDeleteResult
-    deleteOrganisation: UpdateDeleteResult
-    deleteEvent: UpdateDeleteResult
+    deleteLocation(id: ID!): DeleteResult
+    deleteOrganisation(id: ID!, deleteEvents: Boolean): DeleteResult
+    deleteEvent(id: ID!): DeleteResult
   }
 `;

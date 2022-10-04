@@ -12,8 +12,6 @@ let apolloServer!: ApolloServer;
 // we'll use a singular id throughout when querying docs. we'll source this after db seed
 let eventId!: string;
 
-// const findAddressFromLatLng = jest.fn();
-
 jest.mock('../../geocode', () => ({
   findAddressFromLatLng: jest.fn(),
   findLatLngFromAddress: jest.fn(),
@@ -499,6 +497,53 @@ describe('graphql resolvers', () => {
       });
 
       expect(result.errors).toBeDefined();
+    });
+  });
+
+  describe('deletes documents', () => {
+    let orgId!: string;
+
+    beforeAll(async () => {
+      const org = await Models.Organisation.findOne({}).exec();
+      orgId = (org as T.Organisation)._id;
+    });
+
+    it('throws an error if organisation has undeleted events', async () => {
+      expect.assertions(1);
+
+      const result = await apolloServer.executeOperation({
+        query: `mutation DeleteOrg($id: ID!) {
+          deleteOrganisation(id: $id) {
+            success
+            _id
+          }
+        }`,
+        variables: {
+          id: orgId.toString(),
+        },
+      });
+
+      expect(result.errors).toBeDefined();
+    });
+
+    it('it will delete the organisation and force delete events', async () => {
+      expect.assertions(2);
+
+      const result = await apolloServer.executeOperation({
+        query: `mutation DeleteOrg($id: ID!) {
+          deleteOrganisation(id: $id, deleteEvents: true) {
+            success
+            _id
+          }
+        }`,
+        variables: {
+          id: orgId.toString(),
+        },
+      });
+
+      const org = await Models.Organisation.findOne({ _id: orgId }).exec();
+      expect(result.errors).toBeUndefined();
+      expect(org).toBeNull();
     });
   });
 });

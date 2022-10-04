@@ -167,8 +167,101 @@ export default {
     //
     // DELETE
     //
-    deleteLocation: () => ({ success: true }),
-    deleteOrganisation: () => ({ success: true }),
-    deleteEvent: () => ({ success: true }),
+    deleteOrganisation: async (
+      _: never,
+      args: {
+        id: string;
+        deleteEvents: boolean;
+      },
+      ctx: MyContext,
+    ) => {
+      if (args.deleteEvents) {
+        // If user has selected deleteEvents, we'll force delete them
+        await Models.Event.deleteMany({
+          organisation: args.id,
+          __typename: 'Event',
+        });
+        await ctx.dataSources.organisations.deleteFromCacheByFields({
+          organisation: args.id,
+        });
+      } else {
+        // Otherwise we'll check if there's any children knocking about
+        const events = await ctx.dataSources.events.findByFields({
+          organisation: args.id,
+        });
+
+        if (events) {
+          throw Error(
+            'Organisation has events belonging to it. Delete them with deleteEvents: true',
+          );
+        }
+      }
+
+      const result = await Models.Organisation.deleteOne({
+        _id: args.id,
+        __typename: 'Organisation',
+      });
+
+      if (!result.deletedCount) {
+        throw Error(`Error deleting Location with ID ${args.id}`);
+      }
+
+      // Remove from cache too
+      await ctx.dataSources.organisations.deleteFromCacheById(args.id);
+
+      return { success: true, _id: args.id };
+    },
+    deleteLocation: async (
+      _: never,
+      args: {
+        id: string;
+      },
+      ctx: MyContext,
+    ) => {
+      const result = await Models.Location.deleteOne({
+        _id: args.id,
+        __typename: 'Location',
+      });
+
+      if (!result.deletedCount) {
+        throw Error(`Error deleting Location with ID ${args.id}`);
+      }
+
+      const relatedField = { _id: args.id };
+      const relations = await Promise.all([
+        ctx.dataSources.events.findByFields(relatedField),
+        ctx.dataSources.organisations.findByFields(relatedField),
+      ]);
+
+      if (relations) {
+        throw Error('Clean up location relations before deleting');
+      }
+
+      // Remove from cache too
+      await ctx.dataSources.locations.deleteFromCacheById(args.id);
+
+      return { success: true, _id: args.id };
+    },
+    deleteEvent: async (
+      _: never,
+      args: {
+        id: string;
+      },
+      ctx: MyContext,
+    ) => {
+      const result = await Models.Event.deleteOne({
+        _id: args.id,
+        __typename: 'Event',
+      });
+
+      if (!result.deletedCount) {
+        throw Error(`Error deleting Event with ID ${args.id}`);
+      }
+
+      // Remove from cache too
+      await ctx.dataSources.events.deleteFromCacheById(args.id);
+
+      return { success: true, _id: args.id };
+    },
   },
 };
