@@ -1,0 +1,57 @@
+{
+  "data": {
+    "results": [
+      {
+        "address_components": [
+          {
+            "long_name": "6802",
+            "short_name": "6802",
+            "types": ["street_number"]
+          },
+          {
+            "long_name": "Bayfield Avenue",
+            "short_name": "Bayfield Ave",
+            "types": ["route"]
+          },
+          {
+            "long_name": "Arverne",
+            "short_name": "Arverne",
+            "types": ["postal_town"]
+          },
+          {
+            "long_name": "New York",
+            "short_name": "New York",
+            "types": ["administrative_area_level_1"]
+          },
+          {
+            "long_name": "11692",
+            "short_name": "11692",
+            "types": ["postal_code"]
+          },
+          {
+            "long_name": "United States",
+            "short_name": "US",
+            "types": ["country"]
+          }
+        ],
+        "formatted_address": "6802 Bayfield Ave, Arverne, NY 11211, USA",
+        "geometry": {
+          "location": { "lat": 40.7139803, "lng": -73.9489598 },
+          "location_type": "ROOFTOP",
+          "viewport": {
+            "northeast": { "lat": 40.7153292802915, "lng": -73.94761081970849 },
+            "southwest": { "lat": 40.7126313197085, "lng": -73.9503087802915 }
+          }
+        },
+        "place_id": "ChIJi72NxllZwokROkAxMMbU_nw",
+        "types": [
+          "bar",
+          "establishment",
+          "food",
+          "point_of_interest",
+          "restaurant"
+        ]
+      }
+    ]
+  }
+}

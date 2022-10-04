@@ -1,5 +1,4 @@
 /* eslint-disable import/no-extraneous-dependencies */
-/* istanbul ignore file */
 /*
  * This asynchronous script is a helper for seeding the database with documents
  *

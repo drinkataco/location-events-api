@@ -1,6 +1,6 @@
 overwrite: true
 schema:
-  - './src/graphql/types.ts'
+  - './src/graphql/typeDefs.ts'
 documents: null
 generates:
   src/generated/graphql.ts:
