@@ -7,5 +7,5 @@ import mutations from './mutations';
 export default mergeTypeDefs([
   common,
   query,
-  mutations
-])
+  mutations,
+]);
