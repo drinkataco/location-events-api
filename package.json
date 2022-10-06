@@ -52,6 +52,7 @@
   },
   "dependencies": {
     "@googlemaps/google-maps-services-js": "^3.3.16",
+    "@graphql-tools/merge": "^8.3.6",
     "apollo-datasource-mongodb": "^0.5.4",
     "apollo-server-core": "^3.10.2",
     "apollo-server-fastify": "^3.10.2",

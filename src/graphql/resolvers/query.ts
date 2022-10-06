@@ -1,6 +1,7 @@
 import type { Model } from 'mongoose';
 
 import MyContext from '../context';
+import orderBy from './order';
 import * as Models from '../../db/models';
 import * as Types from '../../generated/graphql';
 
@@ -10,9 +11,13 @@ import * as Types from '../../generated/graphql';
 type CollectionArgs = {
   limit: number;
   offset: number;
-  fields?: {
-    [s: string]: string,
-  },
+  filter?: {
+    [s: string]: string;
+  };
+  order?: {
+    dir: Types.QueryOrderDir;
+    by: Types.QueryOrderFieldEvent;
+  };
 };
 
 /**
@@ -24,11 +29,29 @@ type CollectionArgs = {
  * @returns a function to be called by the query resolver to find in collection
  */
 const getCollection =
-  <T>(model: Model<T>, dataSourceName: string) =>
+  <T extends object>(model: Model<T>, dataSourceName: string) =>
     async (_: never | undefined, args: CollectionArgs, ctx: MyContext) => {
+      // Find documents from data source
       const dataSource =
-      ctx.dataSources[dataSourceName as keyof typeof ctx.dataSources];
-      const results = await dataSource.findByFields(args.fields || {});
+        ctx.dataSources[dataSourceName as keyof typeof ctx.dataSources];
+      let results = (await dataSource.findByFields(
+        args.filter || {},
+      )) as unknown[] as T[];
+
+      // Order results by a field (or subfield)
+      if (args.order?.by) {
+        const dir = args.order.dir || Types.QueryOrderDir.Desc;
+
+        if ((args.order.by as string) in orderBy) {
+          // Check if we have a specific type of ordering function for this method
+          const sortFunc = orderBy[args.order.by as string as keyof typeof orderBy];
+          results = results.sort(sortFunc<T>(dir));
+        } else {
+          // Otherwise we'll use the default sort method
+          results = results.sort(orderBy.default<T>(dir, args.order.by as string));
+        }
+      }
+
       return {
         meta: {
           total: await model.countDocuments({}),
@@ -86,7 +109,7 @@ export default {
     ) =>
       getCollection<Types.Event>(Models.Event, 'events')(
         undefined,
-        { ...args, fields: { organisation: organisation._id } },
+        { ...args, filter: { organisation: organisation._id } },
         ctx,
       ),
   },
@@ -105,7 +128,7 @@ export default {
     ) =>
       getCollection<Types.Event>(Models.Event, 'events')(
         undefined,
-        { ...args, fields: { location: location._id } },
+        { ...args, filter: { location: location._id } },
         ctx,
       ),
     findOrganisations: (
@@ -115,7 +138,7 @@ export default {
     ) =>
       getCollection<Types.Organisation>(Models.Organisation, 'organisations')(
         undefined,
-        { ...args, fields: { location: location._id } },
+        { ...args, filter: { location: location._id } },
         ctx,
       ),
   },
