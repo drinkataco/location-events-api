@@ -142,14 +142,15 @@ describe('graphql resolvers', () => {
       expect.assertions(2);
 
       const result = await apolloServer.executeOperation({
-        query: `query {
-          event(id: "${eventId}") {
+        query: `query($id: ID!) {
+          event(id: $id) {
             _id,
             organisation {
               name
             }
           }
         }`,
+        variables: { id: eventId.toString() },
       });
 
       const event = result.data?.event as T.Event;
@@ -170,8 +171,8 @@ describe('graphql resolvers', () => {
       const organisationId = (organisation as T.Organisation)._id;
 
       const result = await apolloServer.executeOperation({
-        query: `query {
-          organisation(id: "${organisationId}") {
+        query: `query($id: ID!) {
+          organisation(id: $id) {
             _id,
             name
             findEvents {
@@ -182,6 +183,7 @@ describe('graphql resolvers', () => {
             }
           }
         }`,
+        variables: { id: organisationId.toString() },
       });
 
       const org = result.data?.organisation as T.Organisation;
@@ -199,6 +201,81 @@ describe('graphql resolvers', () => {
           ]) as T.Event[],
         },
       } as T.Organisation);
+    });
+  });
+
+  describe('ordering collections', () => {
+    const isSortedArray = (array: number[], n: number): boolean => {
+      if (n === 1 || n === 0) return true;
+      return (
+        (array[n - 2] as number) <= (array[n - 1] as number) &&
+        isSortedArray(array, n - 1)
+      );
+    };
+
+    it('orders by createdAt, descending', async () => {
+      expect.assertions(1);
+
+      const result = await apolloServer.executeOperation({
+        query: `query myQuery {
+          findOrganisations(order: { by: createdAt, dir: desc }) {
+            results {
+              createdAt
+            }
+          }
+        }`,
+      });
+
+      const data = result.data as T.Query;
+      const orgs = data.findOrganisations?.results as T.Organisation[];
+
+      const sortedFields = orgs.map((v) => v.createdAt.getTime());
+
+      expect(isSortedArray(sortedFields.reverse(), sortedFields.length)).toBe(true);
+    });
+
+    it('orders by createdAt, ascending', async () => {
+      expect.assertions(1);
+
+      const result = await apolloServer.executeOperation({
+        query: `query myQuery {
+          findOrganisations(order: { by: createdAt, dir: asc }) {
+            results {
+              createdAt
+            }
+          }
+        }`,
+      });
+
+      const data = result.data as T.Query;
+      const orgs = data.findOrganisations?.results as T.Organisation[];
+
+      const sortedFields = orgs.map((v) => v.createdAt.getTime());
+
+      expect(isSortedArray(sortedFields, sortedFields.length)).toBe(true);
+    });
+
+    it('orders events by time.start, descending', async () => {
+      expect.assertions(1);
+
+      const result = await apolloServer.executeOperation({
+        query: `query myQuery {
+          findEvents(order: { by: time, dir: asc }) {
+            results {
+              time {
+                start
+              }
+            }
+          }
+        }`,
+      });
+
+      const data = result.data as T.Query;
+      const orgs = data.findEvents?.results as T.Event[];
+
+      const sortedFields = orgs.map((v) => v.time.start.getTime());
+
+      expect(isSortedArray(sortedFields, sortedFields.length)).toBe(true);
     });
   });
 });

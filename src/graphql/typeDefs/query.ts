@@ -18,11 +18,13 @@ export default gql`
     ): EventQueryResult
     findLocations(
       limit: Int = 200,
-      offset: Int = 0
+      offset: Int = 0,
+      order: QueryOrder
     ): LocationQueryResult
     findOrganisations(
       limit: Int = 200,
-      offset: Int = 0
+      offset: Int = 0,
+      order: QueryOrder
     ): OrganisationQueryResult
   }
 
@@ -80,12 +82,14 @@ export default gql`
 
     # Relations
     findEvents(
-      limit: Int = 200, 
-      offset: Int = 0
+      limit: Int = 200,
+      offset: Int = 0,
+      order: QueryOrderEvent
     ): EventQueryResult
     findOrganisations(
       limit: Int = 200,
-      offset: Int = 0
+      offset: Int = 0,
+      order: QueryOrder
     ): EventQueryResult
   }
 
@@ -110,7 +114,11 @@ export default gql`
 
     # Relations
     location: Location
-    findEvents(limit: Int = 200, offset: Int = 0): EventQueryResult
+    findEvents(
+      limit: Int = 200,
+      offset: Int = 0,
+      order: QueryOrderEvent
+    ): EventQueryResult
   }
 
   #

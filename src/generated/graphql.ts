@@ -91,12 +91,14 @@ export type Location = {
 export type LocationFindEventsArgs = {
   limit?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
+  order?: InputMaybe<QueryOrderEvent>;
 };
 
 
 export type LocationFindOrganisationsArgs = {
   limit?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
+  order?: InputMaybe<QueryOrder>;
 };
 
 export type LocationInput = {
@@ -214,6 +216,7 @@ export type Organisation = {
 export type OrganisationFindEventsArgs = {
   limit?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
+  order?: InputMaybe<QueryOrderEvent>;
 };
 
 export type OrganisationInput = {
@@ -258,12 +261,14 @@ export type QueryFindEventsArgs = {
 export type QueryFindLocationsArgs = {
   limit?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
+  order?: InputMaybe<QueryOrder>;
 };
 
 
 export type QueryFindOrganisationsArgs = {
   limit?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
+  order?: InputMaybe<QueryOrder>;
 };
 
 
