@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file */
-import { MongoDataSource } from 'apollo-datasource-mongodb';
+import { MongoDataSource, Options } from 'apollo-datasource-mongodb';
 
 import type { Event, Location, Organisation } from '../generated/graphql';
 import * as Models from '../db/models';
@@ -9,8 +9,8 @@ export class MyDataSource<T> extends MongoDataSource<T> {
   /**
    * This allows us to grab ObjectIds from GraphQL types
    */
-  public findOneById(id: unknown) {
-    return super.findOneById(id as string);
+  public findOneById(id: unknown, opts?: Options) {
+    return super.findOneById(id as string, opts);
   }
 }
 

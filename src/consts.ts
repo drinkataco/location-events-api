@@ -15,5 +15,8 @@ export const SERVER_HOST = process.env.SERVER_HOST || '127.0.0.1';
 // Mongo DB Connection
 export const MONGO_URL = process.env.MONGO_URL;
 
+// REDIS Connection
+export const REDIS_URL = process.env.REDIS_URL;
+
 // Google Maps API key
 export const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;

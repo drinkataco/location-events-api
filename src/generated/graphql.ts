@@ -35,6 +35,11 @@ export type AddressInput = {
   region?: InputMaybe<Scalars['String']>;
 };
 
+export enum CacheControlScope {
+  Private = 'PRIVATE',
+  Public = 'PUBLIC'
+}
+
 export type DeleteResult = {
   __typename?: 'DeleteResult';
   _id: Scalars['ID'];
@@ -396,6 +401,7 @@ export type ResolversTypes = {
   Address: ResolverTypeWrapper<Address>;
   AddressInput: AddressInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  CacheControlScope: CacheControlScope;
   Date: ResolverTypeWrapper<Scalars['Date']>;
   DeleteResult: ResolverTypeWrapper<DeleteResult>;
   Event: ResolverTypeWrapper<Event>;
@@ -463,6 +469,14 @@ export type ResolversParentTypes = {
   String: Scalars['String'];
   UpdateResult: UpdateResult;
 };
+
+export type CacheControlDirectiveArgs = {
+  inheritMaxAge?: Maybe<Scalars['Boolean']>;
+  maxAge?: Maybe<Scalars['Int']>;
+  scope?: Maybe<CacheControlScope>;
+};
+
+export type CacheControlDirectiveResolver<Result, Parent, ContextType = MyContext, Args = CacheControlDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type AddressResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Address'] = ResolversParentTypes['Address']> = {
   city?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -614,3 +628,6 @@ export type Resolvers<ContextType = MyContext> = {
   UpdateResult?: UpdateResultResolvers<ContextType>;
 };
 
+export type DirectiveResolvers<ContextType = MyContext> = {
+  cacheControl?: CacheControlDirectiveResolver<any, any, ContextType>;
+};
