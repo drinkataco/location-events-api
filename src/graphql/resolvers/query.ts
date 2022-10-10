@@ -5,6 +5,12 @@ import orderBy from './order';
 import * as Models from '../../db/models';
 import * as Types from '../../generated/graphql';
 
+// TTL for collection and document caches.
+// Documents get removed from the cache automatically on update
+// TODO: Add smart cache clearing and warming
+const TTL_COLLECTIONS = 60; // A minute
+const TTL_DOCUMENTS = 1209600; // 2 weeks
+
 /**
  * Possible arguments for collection filtering
  */
@@ -34,9 +40,9 @@ const getCollection =
       // Find documents from data source
       const dataSource =
         ctx.dataSources[dataSourceName as keyof typeof ctx.dataSources];
-      let results = (await dataSource.findByFields(
-        args.filter || {},
-      )) as unknown[] as T[];
+      let results = (await dataSource.findByFields(args.filter || {}, {
+        ttl: TTL_COLLECTIONS,
+      })) as unknown[] as T[];
 
       // Order results by a field (or subfield)
       if (args.order?.by) {
@@ -44,11 +50,14 @@ const getCollection =
 
         if ((args.order.by as string) in orderBy) {
           // Check if we have a specific type of ordering function for this method
-          const sortFunc = orderBy[args.order.by as string as keyof typeof orderBy];
+          const sortFunc =
+          orderBy[args.order.by as string as keyof typeof orderBy];
           results = results.sort(sortFunc<T>(dir));
         } else {
           // Otherwise we'll use the default sort method
-          results = results.sort(orderBy.default<T>(dir, args.order.by as string));
+          results = results.sort(
+            orderBy.default<T>(dir, args.order.by as string),
+          );
         }
       }
 
@@ -74,6 +83,7 @@ const getById =
     (_: never, args: { id: string }, ctx: MyContext) =>
       ctx.dataSources[dataSourceName as keyof typeof ctx.dataSources].findOneById(
         args.id,
+        { ttl: TTL_DOCUMENTS },
       );
 
 export default {
@@ -100,7 +110,9 @@ export default {
   Organisation: {
     // Find one to one
     location: (event: Types.Event, _: never, ctx: MyContext) =>
-      ctx.dataSources.locations.findOneById(event.location),
+      ctx.dataSources.locations.findOneById(event.location, {
+        ttl: TTL_DOCUMENTS,
+      }),
     // Find one to many
     findEvents: (
       organisation: Types.Organisation,
@@ -115,9 +127,13 @@ export default {
   },
   Event: {
     organisation: (event: Types.Event, _: never, ctx: MyContext) =>
-      ctx.dataSources.organisations.findOneById(event.organisation),
+      ctx.dataSources.organisations.findOneById(event.organisation, {
+        ttl: TTL_DOCUMENTS,
+      }),
     location: (event: Types.Event, _: never, ctx: MyContext) =>
-      ctx.dataSources.locations.findOneById(event.location),
+      ctx.dataSources.locations.findOneById(event.location, {
+        ttl: TTL_DOCUMENTS,
+      }),
   },
   Location: {
     // Find one to many

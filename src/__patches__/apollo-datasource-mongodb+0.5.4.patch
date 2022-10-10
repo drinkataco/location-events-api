@@ -1,7 +1,21 @@
+diff --git a/node_modules/apollo-datasource-mongodb/dist/cache.js b/node_modules/apollo-datasource-mongodb/dist/cache.js
+index a89c686..443ba9c 100644
+--- a/node_modules/apollo-datasource-mongodb/dist/cache.js
++++ b/node_modules/apollo-datasource-mongodb/dist/cache.js
+@@ -134,7 +134,7 @@ const createCachingMethods = ({
+       $or: filterArray
+     };
+     (0, _helpers.log)('filter: ', filter);
+-    const findPromise = model ? model.find(filter).exec() : collection.find(filter).toArray();
++    const findPromise = model ? model.find(filter).lean().exec() : collection.find(filter).toArray();
+     const results = await findPromise;
+     (0, _helpers.log)('results: ', results);
+     const orderedDocs = orderDocs(fieldsArray, results);
 diff --git a/node_modules/apollo-datasource-mongodb/index.d.ts b/node_modules/apollo-datasource-mongodb/index.d.ts
-index f06b4dd..6c31e07 100644
+index f06b4dd..f486087 100644
 --- a/node_modules/apollo-datasource-mongodb/index.d.ts
-@@ -39,7 +40,7 @@ declare module 'apollo-datasource-mongodb' {
++++ b/node_modules/apollo-datasource-mongodb/index.d.ts
+@@ -39,7 +39,7 @@ declare module 'apollo-datasource-mongodb' {
      protected collection: Collection<TData>
      protected model: Model<TData>
  

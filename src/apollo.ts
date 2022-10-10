@@ -1,11 +1,15 @@
+import { KeyvAdapter } from '@apollo/utils.keyvadapter';
 import {
   ApolloServerPluginDrainHttpServer,
   ApolloServerPluginLandingPageLocalDefault,
+  Config,
 } from 'apollo-server-core';
 import { ApolloServer } from 'apollo-server-fastify';
 import { ApolloServerPlugin } from 'apollo-server-plugin-base';
 import { FastifyInstance } from 'fastify';
+import Keyv from 'keyv';
 
+import { REDIS_URL } from './consts';
 import { dataSources, resolvers, typeDefs } from './graphql';
 
 /**
@@ -16,7 +20,9 @@ import { dataSources, resolvers, typeDefs } from './graphql';
  *
  * @returns apollo server plugin
  */
-const fastifyAppClosePlugin = (fastify: FastifyInstance): ApolloServerPlugin => ({
+const fastifyAppClosePlugin = (
+  fastify: FastifyInstance,
+): ApolloServerPlugin => ({
   /* eslint-disable @typescript-eslint/require-await */
   serverWillStart: async () => ({
     async drainServer() {
@@ -39,14 +45,23 @@ export default async (fastify: FastifyInstance): Promise<ApolloServer> => {
     ApolloServerPluginLandingPageLocalDefault({ embed: true }),
   ];
 
-  const apollo = new ApolloServer({
+  const config: Config = {
     dataSources,
     typeDefs,
     resolvers,
     csrfPrevention: true,
     cache: 'bounded',
     plugins,
-  });
+  };
+
+  if (REDIS_URL) {
+    // Add Redis Cache if URL set
+    config.cache = new KeyvAdapter(new Keyv(REDIS_URL));
+  } else {
+    config.cache = 'bounded';
+  }
+
+  const apollo = new ApolloServer(config);
 
   await apollo.start();
 
