@@ -12,7 +12,7 @@ The application uses [Apollo](https://www.apollographql.com/) and [Fastify](http
 To run locally
 
 1. Install node modules `npm i`
-1. Set up `.env file` - you can just copy the `.env.example` file for now
+1. Set up `.env` file - you can just copy the `.env.example` file for now
 1. Run `docker compose up` to start a mongodb container and redis container
 1. Run `npm run db:seed` to seed the database with documents
 1. Start the application with `npm run dev` and visit [localhost:3000/graphql](http://localhost:3000/graphql) to query the application
@@ -21,7 +21,7 @@ Alternatively, the command `npm run build` builds a production distribution.
 
 ## Kubernetes
 
-This project includes a kubernetes distribution in the `k8s/` directory.
+This project includes a kubernetes deployment in the `k8s/` directory.
 
 A helper script is supplied, `./k8s/deploy.sh [-f .env]`. This allows resources to be deployed smoothly by;
 
@@ -32,7 +32,7 @@ A helper script is supplied, `./k8s/deploy.sh [-f .env]`. This allows resources 
 
 #### Container Repository Authentication
 
-To fetch the container from the repository kubernetes must be authenticated with the github container registry usign a username and [github token](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-to-the-container-registry).
+To fetch the container from the repository kubernetes must be authenticated with the github container registry with their username and [github token](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-to-the-container-registry).
 
 Run the following command with your credentials:
 
@@ -50,7 +50,7 @@ The container requires several environment variables to be set (as described in 
 This file is sourced from a secret in the kubernetes deployment.
 
 ```bash
-kubectl create secret generic app-env \
+kubectl create secret generic ghcr-drinkataco \
   --from-env-file=.env
 ```
 
