@@ -1,6 +1,7 @@
 # location-events-api
 
-![Application CICD](https://github.com/drinkataco/location-events-api/actions/workflows/application.yaml/badge.svg)
+![Application](https://github.com/drinkataco/location-events-api/actions/workflows/application.yaml/badge.svg)
+![Infrastructure](https://github.com/drinkataco/location-events-api/actions/workflows/infrastructure.yaml/badge.svg)
 
 GraphQL based API that has the abilities to Create, Read, Update, & Delete Locations & Events. Query and find all the locations & events belonging to an organisation, as well as the reverse: being able to query a location(s) / event(s) and having the ability to find the organisation it belongs to.
 
