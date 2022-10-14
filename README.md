@@ -1,6 +1,7 @@
 # location-events-api
 
-![Application CICD](https://github.com/drinkataco/location-events-api/actions/workflows/application.yaml/badge.svg)
+![Application](https://github.com/drinkataco/location-events-api/actions/workflows/application.yaml/badge.svg)
+![Infrastructure](https://github.com/drinkataco/location-events-api/actions/workflows/infrastructure.yaml/badge.svg)
 
 GraphQL based API that has the abilities to Create, Read, Update, & Delete Locations & Events. Query and find all the locations & events belonging to an organisation, as well as the reverse: being able to query a location(s) / event(s) and having the ability to find the organisation it belongs to.
 
@@ -16,15 +17,52 @@ To run locally
 1. Run `npm run db:seed` to seed the database with documents
 1. Start the application with `npm run dev` and visit [localhost:3000/graphql](http://localhost:3000/graphql) to query the application
 
-## Production
+Alternatively, the command `npm run build` builds a production distribution.
 
-Set up your `.env` and then run `npm run build`
+## Kubernetes
+
+This project includes a kubernetes distribution in the `k8s/` directory.
+
+A helper script is supplied, `./k8s/deploy.sh [-f .env]`. This allows resources to be deployed smoothly by;
+
+- Installing resource dependencies via [helm](https://helm.sh/docs/intro/install/) (traefik and cert-manager)
+- Ensures secrets are defined (for container registry authentication and .env definitions)
+
+### Secrets
+
+#### Container Repository Authentication
+
+To fetch the container from the repository kubernetes must be authenticated with the github container registry usign a username and [github token](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-to-the-container-registry).
+
+Run the following command with your credentials:
+
+```bash
+kubectl create secret docker-registry ghcr-drinkataco \
+  --docker-server=ghcr.io \
+  --docker-username="$GITHUB_USERNAME" \
+  --docker-password="$GHCR_TOKEN"
+```
+
+#### ENV File
+
+The container requires several environment variables to be set (as described in the [example file](./.env.example)).
+
+This file is sourced from a secret in the kubernetes deployment.
+
+```bash
+kubectl create secret generic app-env \
+  --from-env-file=.env
+```
 
 ## CI/CD
 
 On push and tag, typescript linting (using eslint) and testing (using jest) are performed before building.
 
-The application is deployed by tagging based on [semantic versioning](https://semver.org/). Once tagged, a github package is created for the dockerfile.
+### Deployment
+
+The application is deployed by tagging based on [semantic versioning](https://semver.org/).
+
+This tag triggers a release workflow and the latest packaged is released to the [repository](https://github.com/drinkataco?tab=packages&repo_name=location-events-api).
 
 ## Examples
 

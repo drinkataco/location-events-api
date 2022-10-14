@@ -1,7 +1,11 @@
-name: 'API Application'
+name: 'Application'
 
 on:
   push:
+    tags-ignore:
+      - 'k8s/**'
+      - 'tf/**'
+      - '.circleci/**'
   workflow_dispatch:
 
 env:
