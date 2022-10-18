@@ -118,17 +118,43 @@ function create_k8s_env_file_secret {
 }
 
 #########################################
+# Create kustomization.yaml file with correct patches for environment
+# Arguments:
+#   1 - name of environment/patches file
+#######################################
+function create_kustomization() {
+  local env_name="$1"
+  local kustomization_loc="${K8S_DIR}/kustomization.yaml"
+
+  echo -e "${BLUE}Creating Kustomization file for ${env_name}${NC}"
+  cat <<EOF >"${kustomization_loc}"
+apiVersion: 'kustomize.config.k8s.io/v1beta1'
+kind: 'Kustomization'
+
+resources:
+  - './certificates.yaml'
+  - './deployment.yaml'
+  - './ingress.yaml'
+
+patchesStrategicMerge:
+  - './patches/${env_name}.yaml'
+EOF
+}
+
+#########################################
 # Main function to run deployment
 #######################################
 function main {
   local env_file
+  local env_name
 
   echo -e "${GREEN}Deploying Kubernetes Resources${NC}"
 
   # First we'll check if there's an argument supplied to create the .env file secret
-  while getopts f:t: opts; do
+  while getopts f:e: opts; do
     case "${opts}" in
       f) env_file="${OPTARG}" ;;
+      e) env_name="${OPTARG}" ;;
       *) continue ;;
     esac
   done
@@ -155,6 +181,7 @@ function main {
 
   # Apply Kubes
   echo -e "\n${GREEN}Applying Kubernetes Resources${NC}"
+  create_kustomization "${env_name:-local}"
   kubectl apply -k "${K8S_DIR}"
 }
 

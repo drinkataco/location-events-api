@@ -7,10 +7,15 @@ metadata:
   labels:
     app: 'api'
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: 'api'
+  replicas: 1 # defaulted with kustomization patch
+  strategy: # defaulted with kustomization patch
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: 'RollingUpdate'
   template:
     metadata:
       labels:
@@ -26,6 +31,11 @@ spec:
             - containerPort: 3000
               protocol: 'TCP'
           imagePullPolicy: 'Always'
+          # terminationMessagePath: /dev/termination-log # defaulted by apiserver
+      # dnsPolicy: ClusterFirst # defaulted by apiserver
+      # restartPolicy: Always # defaulted by apiserver
+      # securityContext: {} # defaulted by apiserver
+      # terminationGracePeriodSeconds: 30 # defaulted by apiserver
       imagePullSecrets:
         - name: 'ghcr-drinkataco'
 

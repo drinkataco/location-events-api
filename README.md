@@ -23,10 +23,12 @@ Alternatively, the command `npm run build` builds a production distribution.
 
 This project includes a kubernetes deployment in the `k8s/` directory.
 
-A helper script is supplied, `./k8s/deploy.sh [-f .env]`. This allows resources to be deployed smoothly by;
+A helper script is supplied, `./k8s/deploy.sh [-e local|dev|prod, -f .env]`. This allows resources to be deployed smoothly by;
 
 - Installing resource dependencies via [helm](https://helm.sh/docs/intro/install/) (traefik and cert-manager)
-- Ensures secrets are defined (for container registry authentication and .env definitions)
+- Ensures secrets are defined (for container registry authentication and .env definitions). The .env secret resource can be created/updated by passing through `-f .env`.
+- Initialises a kustomization file with the correct environment patches (using the `-e` parameter with an argument of `local`, `dev`, or `prod`)
+- Applies the kubernetes resources to your cluster
 
 ### Secrets
 
@@ -50,9 +52,23 @@ The container requires several environment variables to be set (as described in 
 This file is sourced from a secret in the kubernetes deployment.
 
 ```bash
-kubectl create secret generic ghcr-drinkataco \
+kubectl create secret generic app-env \
   --from-env-file=.env
 ```
+
+This secret can be automatically be created by passing through the `-f /path/to/.env` parameter to the deploy script.
+
+### Kustomization
+
+These kubernetes resources use [kustomize](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/) for declaritive management of resources.
+
+This file can be automatically generated when running the `./k8s/deploy.sh` script for deployment, or can be manually created in a similar format to [./k8s/kustomization.example.yaml](./k8s/kustomization.example.yaml)
+
+### Deploy Script
+
+Provided you have a local kubernetes environment (such as with minikube or docker k8s) you can use the provided [deployment script](./k8s/deploy.sh) to install dependencies, provision secrets, initialise kustomize, and apply.
+
+For example, for a local cluster you could run `./k8s/deploy.sh -e local -f .env` which will use the local kustomize patch (and provision a self signed cert), and create a secret for the application from your .env file. Your cluster will then be available from [https://localhot/graphql](https://localhost/graphql).
 
 ## CI/CD
 
