@@ -1,0 +1,13 @@
+apiVersion: 'kustomize.config.k8s.io/v1beta1'
+kind: 'Kustomization'
+
+resources:
+  - './certificates.yaml'
+  - './deployment.yaml'
+  - './ingress.yaml'
+
+patchesStrategicMerge:
+  # Choose the correct patch for the environment (or create your own)
+  # - './patches/local.yaml'
+  # - './patches/stage.yaml'
+  - './patches/prod.yaml'
