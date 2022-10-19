@@ -13,8 +13,8 @@ spec:
 apiVersion: 'cert-manager.io/v1'
 kind: 'Certificate'
 metadata:
-  name: 'ingress-cert'
+  name: 'ingress-certificate'
 spec:
-  commonName: 'lea.proj.shw.al'
+  commonName: 'location-events-api.proj.shw.al'
   dnsNames:
-    - 'lea.proj.shw.al'
+    - 'location-events-api.proj.shw.al'

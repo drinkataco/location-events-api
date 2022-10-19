@@ -2,4 +2,4 @@ coverage/
 dist/
 node_modules/
 .env
-k8s/kustomization.yml
+k8s/kustomization.yaml

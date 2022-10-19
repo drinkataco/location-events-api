@@ -19,11 +19,11 @@ spec:
 apiVersion: 'cert-manager.io/v1'
 kind: 'Certificate'
 metadata:
-  name: 'ingress-cert'
+  name: 'ingress-certificate'
   namespace: 'default'
 spec:
   commonName: '' # Set with Kustomization Patch
-  secretName: 'ingress-secret'
+  secretName: 'ingress-certificate'
   dnsNames: [] # Set with Kustomization Patch
   issuerRef:
     name: 'letsencrypt'
