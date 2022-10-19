@@ -2,14 +2,13 @@ name: 'Infrastructure'
 
 on:
   push:
-    paths:
-      - 'k8s/**'
-      - 'tf/**'
+    # paths:
+      # - 'k8s/**'
+      # - 'tf/**'
   workflow_dispatch:
 
 jobs:
   shellcheck:
-    name: 'Shellcheck'
     runs-on: 'ubuntu-latest'
     steps:
       - uses: 'actions/checkout@v2'
@@ -17,3 +16,19 @@ jobs:
         uses: 'ludeeus/action-shellcheck@master'
         with:
           scandir: './k8s'
+  kubeconform:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: 'actions/checkout@v2'
+      # - uses: 'docker://ghcr.io/yannh/kubeconform:master'
+      - uses: 'docker://ghcr.io/yannh/kubeconform:v0.5.0'
+        with:
+          entrypoint: '/kubeconform'
+          args: >
+            -verbose -debug
+            -schema-location default
+            -schema-location "https://raw.githubusercontent.com/drinkataco/CRDs-catalog/feature/add_cert-manager_crd/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json"
+            -ignore-filename-pattern ".*(\/patches\/|kustomization).*"
+            -summary
+            -output json
+            ./k8s
