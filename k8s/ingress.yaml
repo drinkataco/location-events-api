@@ -11,9 +11,11 @@ spec:
     - 'websecure'
   routes:
     - kind: 'Rule'
-      match: PathPrefix(`/`)
+      match: PathPrefix(`/graphql`)
       services:
         - name: 'api'
           port: 80
+      middlewares:
+        - name: 'ingress-secure-headers'
   tls:
-    secretName: 'tls-certificate'
+    secretName: 'ingress-certificate'

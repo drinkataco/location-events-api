@@ -31,11 +31,8 @@ spec:
             - containerPort: 3000
               protocol: 'TCP'
           imagePullPolicy: 'Always'
-          # terminationMessagePath: /dev/termination-log # defaulted by apiserver
-      # dnsPolicy: ClusterFirst # defaulted by apiserver
-      # restartPolicy: Always # defaulted by apiserver
-      # securityContext: {} # defaulted by apiserver
-      # terminationGracePeriodSeconds: 30 # defaulted by apiserver
+      restartPolicy: 'Always'
+      terminationGracePeriodSeconds: 30
       imagePullSecrets:
         - name: 'ghcr-drinkataco'
 

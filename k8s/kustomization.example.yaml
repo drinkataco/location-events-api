@@ -5,9 +5,10 @@ resources:
   - './certificates.yaml'
   - './deployment.yaml'
   - './ingress.yaml'
+  - './traefik.middleware.yaml'
 
 patchesStrategicMerge:
   # Choose the correct patch for the environment (or create your own)
-  # - './patches/local.yaml'
+  - './patches/local.yaml'
   # - './patches/stage.yaml'
-  - './patches/prod.yaml'
+  # - './patches/prod.yaml'

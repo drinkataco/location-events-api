@@ -11,7 +11,7 @@ declare -r NC="\033[0m" # ansi colour code sequence for no colour text
 
 # Package Config
 declare -r K_NAMESPACE_CERT_MANAGER='cert-manager'
-declare -r K_HELM_V_CERT_MANAGER='v1.9.1'
+declare -r K_HELM_V_CERT_MANAGER='v1.10.0'
 declare -r K_NAMESPACE_TRAEFIK='traefik'
 declare -r K_HELM_V_TRAEFIK='v15.1.0'
 
@@ -65,6 +65,7 @@ function install_traefik {
     helm install \
       traefik traefik/traefik \
       --namespace "${namespace}" \
+      --values "${K8S_DIR}/helm.traefik.yaml" \
       --create-namespace \
       --version "${version}"
   else
@@ -135,6 +136,7 @@ resources:
   - './certificates.yaml'
   - './deployment.yaml'
   - './ingress.yaml'
+  - './traefik.middleware.yaml'
 
 patchesStrategicMerge:
   - './patches/${env_name}.yaml'

@@ -7,6 +7,8 @@ GraphQL based API that has the abilities to Create, Read, Update, & Delete Locat
 
 The application uses [Apollo](https://www.apollographql.com/) and [Fastify](https://www.fastify.io/) as its main graphql and web server. Alongside is [MongoDB](https://www.mongodb.com/) to store data, and a [Redis](https://redis.io/) cache to speed up and cache responses.
 
+Application container orchestration is provided by [Kubernetes](https://kubernetes.io/), using [traefik](https://traefik.io/) as the HTTP loadbalancer. [Cert-Manager](https://github.com/cert-manager/cert-manager/releases/) CRDs are provided to provision HTTPS certificates with [letsencrypt](https://letsencrypt.org/). For local instances of Redis and Mongo, a development [docker compose](./docker-compose.yml) config is also provided.
+
 ## Development
 
 To run locally
@@ -69,6 +71,8 @@ This file can be automatically generated when running the `./k8s/deploy.sh` scri
 Provided you have a local kubernetes environment (such as with minikube or docker k8s) you can use the provided [deployment script](./k8s/deploy.sh) to install dependencies, provision secrets, initialise kustomize, and apply.
 
 For example, for a local cluster you could run `./k8s/deploy.sh -e local -f .env` which will use the local kustomize patch (and provision a self signed cert), and create a secret for the application from your .env file. Your cluster will then be available from [https://localhot/graphql](https://localhost/graphql).
+
+Note: If deploying this cluster locally, and are using the redis and mongo development containers provided in the [docker compose](./docker-compose.yml) file - swap out the hostnames from `localhost` to `host.docker.internal` in your .env file!
 
 ## CI/CD
 
