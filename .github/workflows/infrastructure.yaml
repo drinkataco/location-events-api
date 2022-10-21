@@ -2,9 +2,9 @@ name: 'Infrastructure'
 
 on:
   push:
-    # paths:
-      # - 'k8s/**'
-      # - 'tf/**'
+    paths:
+      - 'k8s/**'
+      - 'tf/**'
   workflow_dispatch:
 
 jobs:
