@@ -7,12 +7,14 @@ GraphQL based API that has the abilities to Create, Read, Update, & Delete Locat
 
 The application uses [Apollo](https://www.apollographql.com/) and [Fastify](https://www.fastify.io/) as its main graphql and web server. Alongside is [MongoDB](https://www.mongodb.com/) to store data, and a [Redis](https://redis.io/) cache to speed up and cache responses.
 
+Application container orchestration is provided by [Kubernetes](https://kubernetes.io/), using [traefik](https://traefik.io/) as the HTTP loadbalancer. [Cert-Manager](https://github.com/cert-manager/cert-manager/releases/) CRDs are provided to provision HTTPS certificates with [letsencrypt](https://letsencrypt.org/). For local instances of Redis and Mongo, a development [docker compose](./docker-compose.yml) config is also provided.
+
 ## Development
 
 To run locally
 
 1. Install node modules `npm i`
-1. Set up `.env file` - you can just copy the `.env.example` file for now
+1. Set up `.env` file - you can just copy the `.env.example` file for now
 1. Run `docker compose up` to start a mongodb container and redis container
 1. Run `npm run db:seed` to seed the database with documents
 1. Start the application with `npm run dev` and visit [localhost:3000/graphql](http://localhost:3000/graphql) to query the application
@@ -21,18 +23,20 @@ Alternatively, the command `npm run build` builds a production distribution.
 
 ## Kubernetes
 
-This project includes a kubernetes distribution in the `k8s/` directory.
+This project includes a kubernetes deployment in the `k8s/` directory.
 
-A helper script is supplied, `./k8s/deploy.sh [-f .env]`. This allows resources to be deployed smoothly by;
+A helper script is supplied, `./k8s/deploy.sh [-e local|dev|prod, -f .env]`. This allows resources to be deployed smoothly by;
 
 - Installing resource dependencies via [helm](https://helm.sh/docs/intro/install/) (traefik and cert-manager)
-- Ensures secrets are defined (for container registry authentication and .env definitions)
+- Ensures secrets are defined (for container registry authentication and .env definitions). The .env secret resource can be created/updated by passing through `-f .env`.
+- Initialises a kustomization file with the correct environment patches (using the `-e` parameter with an argument of `local`, `dev`, or `prod`)
+- Applies the kubernetes resources to your cluster
 
 ### Secrets
 
 #### Container Repository Authentication
 
-To fetch the container from the repository kubernetes must be authenticated with the github container registry usign a username and [github token](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-to-the-container-registry).
+To fetch the container from the repository kubernetes must be authenticated with the github container registry with their username and [github token](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-to-the-container-registry).
 
 Run the following command with your credentials:
 
@@ -53,6 +57,22 @@ This file is sourced from a secret in the kubernetes deployment.
 kubectl create secret generic app-env \
   --from-env-file=.env
 ```
+
+This secret can be automatically be created by passing through the `-f /path/to/.env` parameter to the deploy script.
+
+### Kustomization
+
+These kubernetes resources use [kustomize](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/) for declaritive management of resources.
+
+This file can be automatically generated when running the `./k8s/deploy.sh` script for deployment, or can be manually created in a similar format to [./k8s/kustomization.example.yaml](./k8s/kustomization.example.yaml)
+
+### Deploy Script
+
+Provided you have a local kubernetes environment (such as with minikube or docker k8s) you can use the provided [deployment script](./k8s/deploy.sh) to install dependencies, provision secrets, initialise kustomize, and apply.
+
+For example, for a local cluster you could run `./k8s/deploy.sh -e local -f .env` which will use the local kustomize patch (and provision a self signed cert), and create a secret for the application from your .env file. Your cluster will then be available from [https://localhot/graphql](https://localhost/graphql).
+
+Note: If deploying this cluster locally, and are using the redis and mongo development containers provided in the [docker compose](./docker-compose.yml) file - swap out the hostnames from `localhost` to `host.docker.internal` in your .env file!
 
 ## CI/CD
 

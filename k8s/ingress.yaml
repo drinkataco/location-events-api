@@ -8,10 +8,14 @@ metadata:
     kubernetes.io/ingress.class: 'traefik'
 spec:
   entryPoints:
-    - 'web'
+    - 'websecure'
   routes:
     - kind: 'Rule'
-      match: PathPrefix(`/`)
+      match: PathPrefix(`/graphql`)
       services:
         - name: 'api'
           port: 80
+      middlewares:
+        - name: 'ingress-secure-headers'
+  tls:
+    secretName: 'ingress-certificate'
