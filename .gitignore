@@ -8,3 +8,4 @@ k8s/kustomization.yaml
 **/.terraform/*
 *.tfstate
 *.tfstate.*
+.terraform.lock.hcl
