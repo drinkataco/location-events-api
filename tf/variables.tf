@@ -53,6 +53,10 @@ variable "vpc_private_subnet_cidrs" {
 #
 # EKS
 #
+# variable "eks_cluster_name" {
+  # type = string
+  # default = "}-eks-cluster"
+# }
 # variable "ghrc_username" {
   # description = "Github Container Respository Username"
   # type = string
