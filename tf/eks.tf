@@ -5,8 +5,8 @@ module "eks" {
   cluster_name = local.eks_cluster_name
   cluster_version = "1.23"
 
-  vpc_id = module.vpc.vpc_id
-  subnet_ids = module.vpc.private_subnets
+  vpc_id = aws_vpc.main.id
+  subnet_ids = [for s in aws_subnet.private : s.id]
 
   eks_managed_node_group_defaults = {
     ami_type = "AL2_x86_64"
