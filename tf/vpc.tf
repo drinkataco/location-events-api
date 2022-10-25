@@ -1,28 +1,124 @@
-module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "3.14.2"
+#
+# VPC
+#
+resource "aws_vpc" "main" {
+  cidr_block       = var.vpc_cidr
+  instance_tenancy = "default"
 
-  name = "${var.env_name}-vpc"
+  tags = merge(
+    var.aws_resource_tags,
+    tomap({
+      Name = "${var.env_name}-vpc"
+    })
+  )
+}
 
-  cidr = var.vpc_cidr
-  azs = var.vpc_azs
+#
+# Subnets
+#
+resource "aws_subnet" "public" {
+  # we want to cidr value and the list ID
+  for_each = { for k, v in var.vpc_public_subnet_cidrs : k => v }
 
-  private_subnets = var.vpc_private_subnet_cidrs
-  public_subnets  = var.vpc_public_subnet_cidrs
+  availability_zone       = element(var.vpc_azs, each.key)
+  cidr_block              = each.value
+  vpc_id                  = aws_vpc.main.id
+  map_public_ip_on_launch = true
 
-  enable_nat_gateway   = true
-  single_nat_gateway   = true
-  enable_dns_hostnames = true
+  tags = merge(
+    var.aws_resource_tags,
+    tomap({
+      Name = "${var.env_name}-public-subnet-${each.key}"
+    })
+  )
+}
 
-  public_subnet_tags = {
-    "kubernetes.io/cluster/${local.eks_cluster_name}" = "shared"
-    "kubernetes.io/role/elb" = 1
-  }
+resource "aws_subnet" "private" {
+  # we want to cidr value and the list ID
+  for_each = { for k, v in var.vpc_private_subnet_cidrs : k => v }
 
-  private_subnet_tags = {
-    "kubernetes.io/cluster/${local.eks_cluster_name}" = "shared"
-    "kubernetes.io/role/internal-elb" = 1
-  }
+  availability_zone       = element(var.vpc_azs, each.key)
+  cidr_block              = each.value
+  vpc_id                  = aws_vpc.main.id
+  map_public_ip_on_launch = false
 
+  tags = merge(
+    var.aws_resource_tags,
+    tomap({
+      Name = "${var.env_name}-private-subnet-${each.key}"
+    })
+  )
+}
+
+#
+# Gateways
+#
+resource "aws_internet_gateway" "main" {
+  vpc_id = aws_vpc.main.id
+
+  tags = merge(
+    var.aws_resource_tags,
+    tomap({
+      Name = "${var.env_name}-igw"
+    })
+  )
+}
+
+resource "aws_eip" "nat" {
+  vpc  = true
   tags = var.aws_resource_tags
+}
+
+resource "aws_nat_gateway" "main" {
+  allocation_id = aws_eip.nat.id
+  subnet_id     = aws_subnet.public[keys(aws_subnet.public)[0]].id
+  depends_on    = [aws_internet_gateway.main]
+  tags          = var.aws_resource_tags
+}
+
+#
+# Route Tables
+#
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.main.id
+  }
+
+  tags = merge(
+    var.aws_resource_tags,
+    tomap({
+      Name = "${var.env_name}-igw-route-table"
+    })
+  )
+}
+
+resource "aws_route_table_association" "public" {
+  for_each       = aws_subnet.public
+  subnet_id      = each.value.id
+  route_table_id = aws_route_table.public.id
+}
+
+resource "aws_route_table" "private" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_nat_gateway.main.id
+  }
+
+  tags = merge(
+    var.aws_resource_tags,
+    tomap({
+      Name = "${var.env_name}-igw-route-table"
+    })
+  )
+}
+
+resource "aws_route_table_association" "private" {
+  for_each       = aws_subnet.private
+  subnet_id      = each.value.id
+  route_table_id = aws_route_table.private.id
 }
