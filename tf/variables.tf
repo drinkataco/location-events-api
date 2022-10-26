@@ -32,12 +32,6 @@ variable "vpc_cidr" {
   default     = "10.0.0.0/16"
 }
 
-variable "vpc_azs" {
-  type        = list(string)
-  description = "Availability Zones"
-  default     = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
-}
-
 variable "vpc_public_subnet_cidrs" {
   type        = list(string)
   description = "Public Subnet CIDR blocks"
@@ -49,21 +43,3 @@ variable "vpc_private_subnet_cidrs" {
   description = "Private Subnet CIDR blocks"
   default     = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
 }
-
-#
-# EKS
-#
-# variable "eks_cluster_name" {
-# type = string
-# default = "}-eks-cluster"
-# }
-# variable "ghrc_username" {
-# description = "Github Container Respository Username"
-# type = string
-# }
-
-# variable "ghrc_password" {
-# description = "Github Container Respository Password/Token"
-# type = string
-# sensitive: true
-# }
