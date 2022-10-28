@@ -14,7 +14,7 @@ resource "aws_subnet" "public" {
   tags = merge(
     var.aws_resource_tags,
     tomap({
-      Name = "${var.env_name}-public-subnet-${each.key}"
+      Name                     = "${var.env_name}-public-subnet-${each.key}"
       "kubernetes.io/role/elb" = "shared"
     })
   )
@@ -31,7 +31,7 @@ resource "aws_subnet" "private" {
   tags = merge(
     var.aws_resource_tags,
     tomap({
-      Name = "${var.env_name}-private-subnet-${each.key}"
+      Name                              = "${var.env_name}-private-subnet-${each.key}"
       "kubernetes.io/role/internal-elb" = "1"
     })
   )

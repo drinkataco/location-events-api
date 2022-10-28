@@ -15,7 +15,7 @@ variable "aws_resource_tags" {
 }
 
 #
-# Environment variables
+# Deployment variables
 #
 variable "env_name" {
   description = "Namespace used to prefix all resources"
@@ -43,3 +43,33 @@ variable "vpc_private_subnet_cidrs" {
   description = "Private Subnet CIDR blocks"
   default     = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
 }
+
+#
+# Kubernetes (EKS)
+#
+variable "k8s_helm_traefik_version" {
+  type        = string
+  description = "Version of Traefik Helm Chart"
+  default     = "v15.1.0"
+}
+
+variable "k8s_helm_cert-manager_version" {
+  type        = string
+  description = "Version of Cert Manager Helm Chart"
+  default     = "v1.10.0"
+}
+
+variable "k8s_secret_env_file" {
+  type = string
+  description = "Location of .env file to use"
+}
+
+variable "k8s_docker_registry" {
+  type = object({
+    server = string
+    username = string
+    password = string
+  })
+  description = "ghcr.io credentials"
+}
+
