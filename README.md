@@ -9,6 +9,8 @@ The application uses [Apollo](https://www.apollographql.com/) and [Fastify](http
 
 Application container orchestration is provided by [Kubernetes](https://kubernetes.io/), using [traefik](https://traefik.io/) as the HTTP loadbalancer. [Cert-Manager](https://github.com/cert-manager/cert-manager/releases/) CRDs are provided to provision HTTPS certificates with [letsencrypt](https://letsencrypt.org/). For local instances of Redis and Mongo, a development [docker compose](./docker-compose.yml) config is also provided.
 
+Infrastructure as Code (IaC) if written using [terraform](https://www.terraform.io/) to provision an environment on [AWS](https://aws.amazon.com/) using [Amazon EKS](https://aws.amazon.com/eks/) to host the kubernetes cluster.
+
 ## Contents
 - [Development](#development)
 - [Kubernetes](#kubernetes)
@@ -81,6 +83,27 @@ kubectl create secret generic app-env \
 These kubernetes resources use [kustomize](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/) for declarative management of resources.
 
 Different [patches](./k8s/patches) are supplied for local, dev, and prod environments - the former offering a self-signed certificate, and the latter provisioning them with [letsencrypt](https://letsencrypt.org).
+
+## Terraform
+
+Terraform IaC is located in the [./tf](./tf) directory. To deploy you must:
+
+1. Have an AWS profile set up in your local session
+1. Initialise default variables (take a peak at [./tf/variables.tf](./tf/variables.tf)  to see what you can set) in a file ./terraform.tfvars.json. A selection:
+  - `k8s_docker_registry` must be set to authorise with github to pull the docker container
+  - `k8s_secret_env_file` location of .env file for kubernetes (defaulted to `../.env`)
+  - `aws_region` region of resources (defaulted to `eu-west-1`)
+  - `env_name` resource prefix (defaulted to `ecoapi`)
+1. Run `terraform init` and `terraform apply`
+
+### Post-deployment steps
+
+TODO: this will be automated!
+
+1. Add EKS cluster to .kube/config with `aws eks update-kubeconfig --name ecoapi` (where name is your cluster name)
+1. Deploy Kubernetes Cluster (note: you may want to change the kustomization patch location in [./k8s/kustomization.yaml](./k8s/kustomization.yaml) first) with `kubectl apply ./k8s`
+1. Fetch the loadbalancer EXTERNAL IP for access using `kubectl get svc -A` - you may want to use this to drop behind Route53 too
+1. Add your AWS user to kubernetes aws-auth config - [https://veducate.co.uk/aws-console-permission-eks-cluster/](https://veducate.co.uk/aws-console-permission-eks-cluster/) to view K8s resources in EKS
 
 ## CI/CD
 
