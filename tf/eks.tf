@@ -23,6 +23,7 @@ module "eks" {
       desired_size = 2
 
       vpc_security_group_ids = [
+        module.eks.node_security_group_id,
         aws_security_group.eks.id
       ]
     }

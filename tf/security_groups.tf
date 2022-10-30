@@ -4,30 +4,15 @@ resource "aws_security_group" "eks" {
   vpc_id = aws_vpc.main.id
 
   #
-  # HTTP(S) Ingress
-  #
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  #
-  # TODO: MongoDB Egress
+  # Egress to Mongo DB
   #
   egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
+    description      = "Mongo DB"
+    from_port        = 27017
+    to_port          = 27020
+    protocol         = "tcp"
+    ipv6_cidr_blocks = [var.mongodb_cidr_ipv6]
   }
+
+  tags = var.aws_resource_tags
 }
