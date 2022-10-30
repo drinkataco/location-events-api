@@ -9,6 +9,17 @@ The application uses [Apollo](https://www.apollographql.com/) and [Fastify](http
 
 Application container orchestration is provided by [Kubernetes](https://kubernetes.io/), using [traefik](https://traefik.io/) as the HTTP loadbalancer. [Cert-Manager](https://github.com/cert-manager/cert-manager/releases/) CRDs are provided to provision HTTPS certificates with [letsencrypt](https://letsencrypt.org/). For local instances of Redis and Mongo, a development [docker compose](./docker-compose.yml) config is also provided.
 
+## Contents
+- [Development](#development)
+- [Kubernetes](#kubernetes)
+  - [Local Deployment](#local-deployment)
+  - [Secrets](#secrets)
+  - [Kustomization](#kustomization)
+- [CI/CD](#ci-cd)
+- [GraphQL Examples](#examples)
+  - [Queries](#queries)
+  - [Mutations](#mutations)
+
 ## Development
 
 To run locally
@@ -81,7 +92,7 @@ The application is deployed by tagging based on [semantic versioning](https://se
 
 This tag triggers a release workflow and the latest packaged is released to the [repository](https://github.com/drinkataco?tab=packages&repo_name=location-events-api).
 
-## Examples
+## GraphQL Examples
 
 ### Queries
 
