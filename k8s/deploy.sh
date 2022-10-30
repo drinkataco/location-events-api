@@ -65,7 +65,6 @@ function install_traefik {
     helm install \
       traefik traefik/traefik \
       --namespace "${namespace}" \
-      --values "${K8S_DIR}/helm.traefik.yaml" \
       --create-namespace \
       --version "${version}"
   else
