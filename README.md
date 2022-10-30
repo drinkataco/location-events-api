@@ -25,12 +25,19 @@ Alternatively, the command `npm run build` builds a production distribution.
 
 This project includes a kubernetes deployment in the `k8s/` directory.
 
-A helper script is supplied, `./k8s/deploy.sh [-e local|dev|prod, -f .env]`. This allows resources to be deployed smoothly by;
+The manifests require [cert-manager](https://cert-manager.io) and [traefik](https://traefik.io/) to be installed (with [helm](https://helm.sh/docs/intro/install/) if you'd like), and secrets for docker-registry authentication and application environment variables.
+
+### Local Deployment
+
+A helper script is supplied, `./k8s/deploy.sh [-f .env -r username:password]` for deploying the cluster locally by;
 
 - Installing resource dependencies via [helm](https://helm.sh/docs/intro/install/) (traefik and cert-manager)
-- Ensures secrets are defined (for container registry authentication and .env definitions). The .env secret resource can be created/updated by passing through `-f .env`.
-- Initialises a kustomization file with the correct environment patches (using the `-e` parameter with an argument of `local`, `dev`, or `prod`)
+- Ensuring secrets are defined (for container registry authentication and .env definitions).
+  - The .env secret can be created/updated by passing through `-f .env`.
+  - The docker registry secret can be created/updated by passing through `-r username:password`
 - Applies the kubernetes resources to your cluster
+
+Note: If deploying this cluster locally, and are using the redis and mongo development containers provided in the [docker compose](./docker-compose.yml) file - swap out the hostnames from `localhost` to `host.docker.internal` in your .env file!
 
 ### Secrets
 
@@ -58,21 +65,11 @@ kubectl create secret generic app-env \
   --from-env-file=.env
 ```
 
-This secret can be automatically be created by passing through the `-f /path/to/.env` parameter to the deploy script.
-
 ### Kustomization
 
-These kubernetes resources use [kustomize](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/) for declaritive management of resources.
+These kubernetes resources use [kustomize](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/) for declarative management of resources.
 
-This file can be automatically generated when running the `./k8s/deploy.sh` script for deployment, or can be manually created in a similar format to [./k8s/kustomization.example.yaml](./k8s/kustomization.example.yaml)
-
-### Deploy Script
-
-Provided you have a local kubernetes environment (such as with minikube or docker k8s) you can use the provided [deployment script](./k8s/deploy.sh) to install dependencies, provision secrets, initialise kustomize, and apply.
-
-For example, for a local cluster you could run `./k8s/deploy.sh -e local -f .env` which will use the local kustomize patch (and provision a self signed cert), and create a secret for the application from your .env file. Your cluster will then be available from [https://localhot/graphql](https://localhost/graphql).
-
-Note: If deploying this cluster locally, and are using the redis and mongo development containers provided in the [docker compose](./docker-compose.yml) file - swap out the hostnames from `localhost` to `host.docker.internal` in your .env file!
+Different [patches](./k8s/patches) are supplied for local, dev, and prod environments - the former offering a self-signed certificate, and the latter provisioning them with [letsencrypt](https://letsencrypt.org).
 
 ## CI/CD
 

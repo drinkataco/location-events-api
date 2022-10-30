@@ -119,28 +119,29 @@ function create_k8s_env_file_secret {
 }
 
 #########################################
-# Create kustomization.yaml file with correct patches for environment
+# Create Secret for docker registry auth
 # Arguments:
-#   1 - name of environment/patches file
+#   1 - name of secret to set
+#   2 - registry url
+#   3 - registry username
+#   4 - registry password
 #######################################
-function create_kustomization() {
-  local env_name="$1"
-  local kustomization_loc="${K8S_DIR}/kustomization.yaml"
+function create_k8s_docker_registry_secret {
+  local secret_name="$1"
+  local reg_url="$2"
+  local reg_user="$3"
+  local reg_pw="$4"
 
-  echo -e "${BLUE}Creating Kustomization file for ${env_name}${NC}"
-  cat <<EOF >"${kustomization_loc}"
-apiVersion: 'kustomize.config.k8s.io/v1beta1'
-kind: 'Kustomization'
+  if check_k8s_secret "${secret_name}" 1 &> /dev/null; then
+    echo -e "${BLUE}Deleting pre-existing secret for '${secret_name}'${NC}"
+    kubectl delete secret "${secret_name}"
+  fi
 
-resources:
-  - './certificates.yaml'
-  - './deployment.yaml'
-  - './ingress.yaml'
-  - './traefik.middleware.yaml'
-
-patchesStrategicMerge:
-  - './patches/${env_name}.yaml'
-EOF
+  echo -e "${BLUE}Creating Secret for '${secret_name}'${NC}"
+  kubectl create secret docker-registry "${secret_name}" \
+    --docker-server="${reg_url}" \
+    --docker-username="${reg_user}" \
+    --docker-password="${reg_pw}"
 }
 
 #########################################
@@ -148,15 +149,19 @@ EOF
 #######################################
 function main {
   local env_file
-  local env_name
+  local registry_username
+  local registry_password
 
   echo -e "${GREEN}Deploying Kubernetes Resources${NC}"
 
   # First we'll check if there's an argument supplied to create the .env file secret
-  while getopts f:e: opts; do
+  while getopts f:r: opts; do
     case "${opts}" in
       f) env_file="${OPTARG}" ;;
-      e) env_name="${OPTARG}" ;;
+      r)
+        registry_username=${OPTARG%:*}
+        registry_password=${OPTARG#*:}
+      ;;
       *) continue ;;
     esac
   done
@@ -164,6 +169,15 @@ function main {
   if [[ -n "${env_file}" ]]; then
     echo -e "${GREEN}Create Application dotenv file secret${NC}"
     create_k8s_env_file_secret 'app-env' "${env_file}"
+  fi
+
+  if [[ -n "${registry_username}" && -n "${registry_password}" ]]; then
+    echo -e "${GREEN}Create Docker registry secret${NC}"
+    create_k8s_docker_registry_secret \
+      'ghcr-drinkataco' \
+      'ghcr.io' \
+      "${registry_username}" \
+      "${registry_password}"
   fi
 
   # Install dependencies via helm
@@ -183,7 +197,6 @@ function main {
 
   # Apply Kubes
   echo -e "\n${GREEN}Applying Kubernetes Resources${NC}"
-  create_kustomization "${env_name:-local}"
   kubectl apply -k "${K8S_DIR}"
 }
 
