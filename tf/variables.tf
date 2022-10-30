@@ -60,16 +60,25 @@ variable "k8s_helm_cert-manager_version" {
 }
 
 variable "k8s_secret_env_file" {
-  type = string
+  type        = string
   description = "Location of .env file to use"
 }
 
 variable "k8s_docker_registry" {
   type = object({
-    server = string
+    server   = string
     username = string
     password = string
   })
   description = "ghcr.io credentials"
 }
 
+#
+# Mongo DB
+#
+# TODO: this willl be generated
+variable "mongodb_cidr_ipv6" {
+  type        = string
+  description = "CIDR block for mongodb"
+  default     = "2a01:4b00:f631:5800::1/128"
+}

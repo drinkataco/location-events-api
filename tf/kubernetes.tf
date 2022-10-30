@@ -20,7 +20,7 @@ resource "helm_release" "cert-manager" {
   version          = var.k8s_helm_cert-manager_version
 
   set {
-    name = "installCRDs"
+    name  = "installCRDs"
     value = "true"
   }
 }
@@ -35,10 +35,10 @@ resource "kubernetes_secret_v1" "docker_registry" {
 
   data = {
     ".dockerconfigjson" = jsonencode({
-      auths: {
-        "${var.k8s_docker_registry.server}": {
-          "username": "${var.k8s_docker_registry.username}",
-          "password": "${var.k8s_docker_registry.password}"
+      auths : {
+        "${var.k8s_docker_registry.server}" : {
+          "username" : "${var.k8s_docker_registry.username}",
+          "password" : "${var.k8s_docker_registry.password}"
         }
       }
     })
