@@ -59,3 +59,24 @@ resource "kubernetes_secret_v1" "environment_variables" {
 
   data = data.dotenv.dev_config.env
 }
+
+# Deploy Kubernetes
+resource "null_resource" "k8s_apply" {
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+
+  depends_on = [
+    resource.helm_release.traefik,
+    resource.helm_release.cert-manager,
+    resource.kubernetes_secret_v1.docker_registry,
+    resource.kubernetes_secret_v1.environment_variables
+  ]
+
+  # provisioner "local-exec" {
+    # command = <<EOT
+      # dir=/Users/joshwalwyn/projects/mine/location-events-api/k8s
+
+    # EOT
+  # }
+}

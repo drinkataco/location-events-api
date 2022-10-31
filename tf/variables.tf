@@ -20,7 +20,7 @@ variable "aws_resource_tags" {
 variable "env_name" {
   description = "Namespace used to prefix all resources"
   type        = string
-  default     = "ecoapi"
+  default     = "eloapi"
 }
 
 #
