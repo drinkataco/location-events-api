@@ -73,6 +73,12 @@ variable "k8s_docker_registry" {
   description = "ghcr.io credentials"
 }
 
+variable "k8s_kustomization_patch" {
+  type        = string
+  description = "Location of kustomization patch"
+  default     = "local"
+}
+
 #
 # Mongo DB
 #

@@ -96,15 +96,21 @@ Terraform IaC is located in the [./tf](./tf) directory. To deploy you must:
   - `k8s_docker_registry` must be set to authorise with github to pull the docker container
   - `k8s_secret_env_file` location of .env file for kubernetes (defaulted to `../.env`)
   - `aws_region` region of resources (defaulted to `eu-west-1`)
-  - `env_name` resource prefix (defaulted to `ecoapi`)
+  - `env_name` resource prefix (defaulted to `eloapi`)
 3. Run `terraform init` and `terraform apply`
 
-### Post-deployment steps
+### Post Deployment Steps
 
-TODO: this will be automated!
+#### Local Access
 
-1. Add EKS cluster to your local .kube/config with `aws eks update-kubeconfig --name ecoapi` (where name is your cluster name) and use it with `kubectl config set-context [cluster]`
-1. Deploy Kubernetes Cluster (note: you may want to change the kustomization patch location in [./k8s/kustomization.yaml](./k8s/kustomization.yaml) first) with `kubectl apply -k ./k8s`
+Once deployed you can use the command `aws eks update-kubeconfig --name <env_name>` to update your `~/.kube/config` file with your cluster config. Then, using `kubectl config set-context <cluster_arn>` you can change your context. By running `kubectl get svc -A`, you can also see the DNS name of your EKS cluster, under EXTERNAL_IP on the traefik service.
+
+### EKS Console
+
+TODO: Add your AWS user to the generated role (ARN returned in the `eks_console_access_role` output) to view cluster information directly in the console.
+
+### TODO:
+
 1. Fetch the loadbalancer EXTERNAL IP for access using `kubectl get svc -A` - you may want to use this to drop behind Route53 too!
 1. Add your AWS user to kubernetes aws-auth config - [https://veducate.co.uk/aws-console-permission-eks-cluster/](https://veducate.co.uk/aws-console-permission-eks-cluster/) to view K8s resources in EKS
 

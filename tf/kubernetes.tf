@@ -1,3 +1,6 @@
+#
+# Initialise Environment
+#
 resource "helm_release" "traefik" {
   name             = "traefik"
   namespace        = "traefik"
@@ -60,23 +63,51 @@ resource "kubernetes_secret_v1" "environment_variables" {
   data = data.dotenv.dev_config.env
 }
 
+#
 # Deploy Kubernetes
-resource "null_resource" "k8s_apply" {
-  triggers = {
-    always_run = "${timestamp()}"
+#
+resource "null_resource" "create_tmp_dir" {
+  provisioner "local-exec" {
+    command = "mkdir -p ${local.tmp_dir}"
   }
-
+}
+resource "local_file" "kubeconfig" {
   depends_on = [
     resource.helm_release.traefik,
     resource.helm_release.cert-manager,
     resource.kubernetes_secret_v1.docker_registry,
-    resource.kubernetes_secret_v1.environment_variables
+    resource.kubernetes_secret_v1.environment_variables,
+    resource.null_resource.create_tmp_dir
   ]
 
-  # provisioner "local-exec" {
-    # command = <<EOT
-      # dir=/Users/joshwalwyn/projects/mine/location-events-api/k8s
+  content  = local.kubeconfig
+  filename = local.kubeconfig_generated_file
+}
 
-    # EOT
-  # }
+data "template_file" "kustomization" {
+  template = "${file("${path.module}/assets/kustomization.tpl")}"
+  vars = {
+    resource_location = "./k8s"
+    kustomization_patch = "./k8s/patches/${var.k8s_kustomization_patch}.yaml"
+  }
+}
+
+resource "null_resource" "create_manifests" {
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+
+  depends_on = [resource.local_file.kubeconfig]
+
+  provisioner "local-exec" {
+    command = <<KUBE
+      # create kustomize
+      mkdir -p "${local.kustomization_generated_dir}"
+      cp -r "${local.k8s_dir}" "${local.kustomization_generated_dir}"
+      echo "${data.template_file.kustomization.rendered}" > "${local.kustomization_generated_dir}/kustomization.yaml"
+
+      # apply files
+      kubectl --kubeconfig "${local.kubeconfig_generated_file}" apply -k "${local.kustomization_generated_dir}"
+    KUBE
+  }
 }

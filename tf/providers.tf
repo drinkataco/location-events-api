@@ -19,4 +19,3 @@ provider "kubernetes" {
 data "aws_eks_cluster_auth" "cluster-auth" {
   name = module.eks.cluster_id
 }
-
