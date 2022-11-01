@@ -78,13 +78,3 @@ variable "k8s_kustomization_patch" {
   description = "Location of kustomization patch"
   default     = "local"
 }
-
-#
-# Mongo DB
-#
-# TODO: this willl be generated
-variable "mongodb_cidr_ipv6" {
-  type        = string
-  description = "CIDR block for mongodb"
-  default     = "2a01:4b00:f631:5800::1/128"
-}

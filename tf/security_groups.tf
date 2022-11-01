@@ -16,10 +16,15 @@ resource "aws_security_group" "eks" {
   }
 
   #
-  # Egress to Mongo DB
+  # Egress
+  #
+  # We need to be able to connect to:
+  #  - MongoDB Atlas (External)
+  #  - Google Maps API (External)
+  #  - Elasticache (AWS)
   #
   egress {
-    description = "Mongo DB"
+    description = "Allow All"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
