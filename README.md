@@ -92,11 +92,12 @@ Different [patches](./k8s/patches) are supplied for local, dev, and prod environ
 Terraform IaC is located in the [./tf](./tf) directory. To deploy you must:
 
 1. Have an AWS profile set up in your local session
-2. Initialise default variables (take a peak at [./tf/variables.tf](./tf/variables.tf)  to see what you can set) in a file ./terraform.tfvars.json. A selection:
+2. Initialise default variables (take a peak at [./tf/variables.tf](./tf/variables.tf)  to see what you can set) in a file ./terraform.tfvars.json. A selection of values:
   - `k8s_docker_registry` must be set to authorise with github to pull the docker container
   - `k8s_secret_env_file` location of .env file for kubernetes (defaulted to `../.env`)
   - `aws_region` region of resources (defaulted to `eu-west-1`)
   - `env_name` resource prefix (defaulted to `eloapi`)
+  - `elasticache_enable` we can turn off provisioning a elasticache redis cluster by setting this to false
 3. Run `terraform init` and `terraform apply`
 
 ### Post Deployment Steps
