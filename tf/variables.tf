@@ -78,3 +78,24 @@ variable "k8s_kustomization_patch" {
   description = "Location of kustomization patch"
   default     = "local"
 }
+
+#
+# Elasticache
+#
+variable "elasticache_enable" {
+  type        = bool
+  description = "To provision an elasticache node or not"
+  default     = true
+}
+
+variable "elasticache_node_type" {
+  type        = string
+  description = "Redis node type"
+  default     = "cache.t3.small"
+}
+
+variable "elasticache_cluster_port" {
+  type        = number
+  description = "Redis cluster port"
+  default     = 6379
+}

@@ -60,7 +60,12 @@ resource "kubernetes_secret_v1" "environment_variables" {
     name = "app-env"
   }
 
-  data = data.dotenv.dev_config.env
+  data = merge(
+    data.dotenv.dev_config.env,
+    {
+      REDIS_URL = var.elasticache_enable ?  "redis://${aws_elasticache_cluster.main[0].cache_nodes[0].address}:${var.elasticache_cluster_port}" : null
+    }
+  )
 }
 
 #
@@ -85,9 +90,9 @@ resource "local_file" "kubeconfig" {
 }
 
 data "template_file" "kustomization" {
-  template = "${file("${path.module}/assets/kustomization.tpl")}"
+  template = file("${path.module}/assets/kustomization.tpl")
   vars = {
-    resource_location = "./k8s"
+    resource_location   = "./k8s"
     kustomization_patch = "./k8s/patches/${var.k8s_kustomization_patch}.yaml"
   }
 }
