@@ -60,7 +60,7 @@
     "apollo-server-fastify": "^3.10.2",
     "apollo-server-plugin-base": "^3.6.2",
     "dotenv": "^16.0.2",
-    "fastify": "^3.29.2",
+    "fastify": "^3.29.4",
     "graphql": "^16.6.0",
     "keyv": "^4.5.0",
     "mongoose": "^6.6.1",
